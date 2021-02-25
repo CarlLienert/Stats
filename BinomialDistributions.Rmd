@@ -1,0 +1,129 @@
+---
+title: "Distributions"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+According to the CDC the positivity rate for coronavirus in La Plata county on Wednesday, 24-Feb was $2.15\%$.  Suppose 15 people test on Friday.  Let $X$ be a discrete random variable that is the number of people (of those 15) who test positive.  We can ask questions like:
+
+* What is the probability that 2 (exactly) people test positive? $$P(X=2)$$
+
+* What is the probability that 3 or fewer people test postive? $$P(X \leq 3)$$.
+
+The probability that one person tests positive is 
+
+```{r}
+postest <- 0.0215
+```
+
+We are making two very important assumptions:
+
+* The probability for each person who tests is the **same**.
+* Each person's test is **independent** of other tests.
+
+The probabilty that one person test negative is
+```{r}
+negtest <- 1-postest
+```
+
+There are many ways 2 people could test positive:
+
+* the first two test postive, the remaining 13 negative
+* the first and third test positive, the remainig 13 negative
+* etc.
+* How many different combinations are there?  $$15 \choose 2:$$
+
+```{r}
+choose(15, 2)
+```
+
+Every one of these ways has a probability of $$(0.0215)^2 \cdot (1-0.0215)^{13}$$ of happening. So, the probability of exactly two people out of 15 testing positive is:
+
+```{r}
+choose(15, 2)*(postest)^2*(negtest)^13
+```
+
+The random variable for this situation has a *binomial distribution*.
+
+Remember, this is a discrete random variable, not a continuous random variable.
+
+The usual language for binomial distributions is that one possibility (testing positive) is called a *success*, the other possibility (testing negative) is called a *failure*.  There are only *2 options*.  Other examples: it rains today (or not),  passing a statistics exam (or not), etc.
+
+Here is the binomial distribution for this random variable:
+
+
+(It's maybe a little easier to see with `type='b'`, just remember the random variable is discrete.)
+
+```{r}
+plot(dbinom(0:15, 15, postest), type='h')
+```
+
+
+I found a better way to plot:
+
+```{r}
+barplot(dbinom(0:15, 15, postest), names.arg=0:15)
+```
+
+
+For different probablities of success we obtain different shaped distributions:
+
+```{r}
+plot(dbinom(1:15, 15, .2), type='b')
+```
+
+The probability that 3 or fewer people test positive (so 0, 1, 2, or 3 people test positive) is:
+
+
+
+$${15\choose 0} s^0 f^{15}+ {15 \choose 1} s^1 f^{14}+ {15\choose 2} s^2 f^{13}+ {15 \choose 3} s^3 f^{12}$$
+Where $s$ is the probability of "success" and $f$ is the probability of "failure."
+
+```{r}
+choose(15,0)*postest^0*negtest^15+choose(15,1)*postest^1*negtest^14+choose(15,2)*postest^2*negtest^13+choose(15, 3)*postest^3*negtest^12
+```
+There are 4 basic R-functions associated with a distribution. 
+
+* d-*dist* we saw above when we plotted the distribution.  It is the *pdf*
+* p-*dist* which computes the area in the lower tail, i.e. $P(X \leq x)$. It is the *cdf*. Be *very* careful - the $\leq$ makes a difference!
+* q-*dist* which computes the value $q$ such that $P(X \leq q)= \text{ the prob. you send}$
+* r-*dist* which generates a random sample from the given distribution.  This is useful for running simulations.
+
+The calls for different distributions are each a bit different depending on the parameters the distribution takes.
+
+Here is the computation we did above:
+
+```{r}
+pbinom(3,15,postest)
+```
+
+This particular example isn't great for illustrating `qbinom`...we'll come back to it. 
+
+But `qbinom` is the inverse of `pbinom`: you give it a probability, $p$, and it gives you back (in this case) the number of positive tests you'll have with probability $p$.
+
+
+
+Finally, if we want to generate a random sample from this distribution:
+
+```{r}
+rbinom(100, 15, postest)
+```
+
+If you plot these data in a histogram - you have a *sampling distribution* from a binomials distributed population.
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
