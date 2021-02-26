@@ -1,0 +1,51 @@
+---
+title: "Exercise_4_14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+success <- .286
+n <- 800
+pbinom(230,n,success)-pbinom(219, n, success)
+```
+
+```{r}
+barplot(dbinom(0:800, 800, success))
+```
+
+dice
+-----
+
+```{r}
+rollsix <- 1/6
+1-pbinom(1, 6, rollsix)
+```
+
+The chance of rolling at least one six is:
+```{r}
+1-pbinom(0,6, rollsix)
+```
+The chance of rolling at least two 6's from twelve dice is:
+
+
+```{r}
+1-pbinom(1,12,rollsix)
+```
+
+The chance of rolling at least three 6's from eighteen is:
+
+```{r}
+1-pbinom(2, 18, rollsix)
+```
+
+```{r}
+barplot(dbinom(0:6, 6, rollsix),names.arg=0:6)
+barplot(dbinom(0:12, 12, rollsix),names.arg=0:12)
+barplot(dbinom(0:18, 18, rollsix),names.arg=0:18)
+```
+
+
