@@ -1,0 +1,82 @@
+---
+title: "OtherDistributionsHW"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+1.
+---
+As you walk down the hall, the probability that the next person you see is wearing some sort of Skyhawk apparel is 0.15. 
+
+**a)** 
+What is the probability that you walk past exactly 20 people before seeing one with Skyhawk apparel?
+
+```{r}
+SkyhawkSuccess <- 0.15
+dgeom(20, SkyhawkSuccess)
+```
+
+**b)** 
+What is the probability that you walk past at least 20 people before seeing one with Skyhawk apparel?
+
+```{r}
+1-pgeom(20, SkyhawkSuccess)
+```
+
+**c)** 
+What is the probability that 4 of the next 20 people you walk past are wearing Skyhawk apparel?
+
+```{r}
+dbinom(4,20, SkyhawkSuccess)
+```
+
+2)
+-----
+It snows once every 7 days during the Winter. 
+
+**a)**
+What is the probability that it will snow sometime in the next 3 days?
+
+```{r}
+pexp(3, 1/7)
+```
+
+**b)**
+What is the probability that it will snow next Thursday at 3pm exactly?
+
+zero
+
+**c)**
+For how long should I plan my vacation if I want to be 80% certain of it snowing?
+
+
+
+
+4.16
+----
+**a)** 10
+
+**b)**
+
+```{r}
+N=1000
+SampDist <- numeric(N)
+for (i in 1:N)
+{SampFromExp <- rexp(30, 1/10)
+SampDist[i] <- mean(SampFromExp)}
+
+hist(SampDist)
+mean(SampDist>=12)
+```
+
+**c)**
+
+No.
+
+
+
+

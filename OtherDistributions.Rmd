@@ -1,0 +1,288 @@
+---
+title: "Other Distributions"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Brief recap/motivation for looking at distributions
+----
+
+For example, a *hypothesis test* is an argument that an observed, measured outcome (statistic) is significant (i.e. not fake news).
+
+This argument is, ultimately, a probability argument. No one can *prove* that the vaccine prevents Covid, but they can demonstrate that the probability is high.
+
+Probability is calculated from a *distribution*.  
+
+There are many different distributions: normal, uniform, binomial, exponential, geometric, Poisson, etc. etc.  
+
+To confuse matters, distributions play a variety of roles: they can be the distribution of the population, the distribution of a sample, a permutation distribution, a sampling distribution, etc. 
+
+The sampling distribution depends on the distribution of the population. The sampling distribution is the one we use to calculate the probability for the hypothesis test.
+
+Last time we learned about a *binomial distribution.*  A particular kind of experiment (random variable) has a binomial distribution.
+
+* We repeat something $n$ times - called trials.
+* The probability of *success* of each trial is exactly the same and independent of other trials.
+
+R allows us to easily do 4 computations related to different distributions:  (replace *dist* below with binom, or normal, or exp, etc.)
+
+* d$dist$: $\text{d}dist(x)=P(X=x)$  For discrete random variables this is the pmf, for continuous the pdf.  This is the one you use to *plot* the distribution.
+
+* p$dist$: $\text{p}dist(q)=P(X \leq q)$.  This calculates the area in the lower tail below the value $X=q$.  Think about areas under the curve ploted by d$dist$ and you can find other probabilities, like $P(X > q)$, $P(q_1 \leq X \leq q_2)$, etc.  
+
+* q$dist$: $\text{q}dist(p)$ is the value of $q$ such that $P(X \leq q)=p$.  This is the inverse of p$dist$.
+
+* r$dist$: $\text{r}dist(n)$ generates a random sample from the indicated distribution.  Say I want to know what the sampling distribution from an exponentially distributed population is. (it isn't exponential) I can use r$dist$ to simulate this sampling distribution.
+
+
+We'll look at a couple other distributions, describe the situations in which they apply, and illustrate the use of these 4 R-functions.  
+
+These distributions, and others, are discussed in Appendix B.
+
+Geometric
+----
+
+The *geometric* distribution is for a discrete random variable.
+
+The probability of me making a free throw is $0.15$.  (Probably generous.)  Let $B$ be the random variable that gives the number of attempts it takes for me to make a basket.  That is, some number of failed attempts followed by a single successful attempt.
+
+Warning: the book and R count differently....
+
+So, for example $P(B=4)=(0.85)\cdot(0.85)\cdot(0.85)\cdot (0.15)$.  That is, 3 failures and 1 success.
+
+Without fancy technology I would compute:
+
+
+
+```{r}
+basketsuccess <- 0.15
+basketfailure <- 1-basketsuccess
+(basketfailure)^3*(basketsuccess)
+```
+
+Or, using `dgeom`, which computes exactly what is in the previous.
+
+```{r}
+dgeom(3, basketsuccess)
+```
+
+Notice, the way R codes this distribution. We use $k=3$ for the number of *failures* until a success.
+
+What is the probability that it takes me 5 or more?
+
+$$P(B \geq 5)=1-P(B < 5)$$
+
+To compute $P(B<5)$ we'll use `pgeom`.  We want 0, 1, 2, or 3 *failures* before a success.
+
+```{r}
+pgeom(3,basketsuccess)
+```
+
+Don't forget to subtract from 1 to get the upper tail.  The following is $$P(B \geq 5)=1-P(B < 5)$$
+
+```{r}
+1-pgeom(3,basketsuccess)
+```
+
+The following is my check, to make sure I understand what R is computing.
+
+```{r}
+trials <- c(1,2,3,4)
+basketfailure^(trials-1)*basketsuccess
+1-sum(basketfailure^(trials-1)*basketsuccess)
+```
+
+
+
+Here is the distribution:
+
+```{r}
+barplot(dgeom(0:20, basketsuccess),names.arg=0:20)
+```
+
+Increase the size of the sequence `0:20` to see more of the tail.
+
+You can think of this as a *population* distribution.  Say I'd like to make a statement like; "It takes me on average $??$ attempts to make my first basket.  I could simulate a sampling distribution:
+
+* take a sample of size $n=5$ from this geometric distribution.
+* find the mean of those 5 numbers
+* repeat lots of times
+* look at the graphical representation of the distribution, and find the mean of this sampling distribution.
+
+```{r}
+sample(rgeom(5, basketsuccess))
+rgeom(5, basketsuccess)
+```
+
+
+```{r}
+N=10^4
+sampdist <- numeric(N)
+for (i in 1:N)
+{SampFromGeometric <- rgeom(5,basketsuccess)
+sampdist[i] <- mean(SampFromGeometric)}
+
+hist(sampdist, freq=F)
+
+mean(sampdist)
+
+```
+As foreshadowing let's do two more things:
+
+1. See what happens when the sample size increases.  (not size of the simulation, but size of the sample)
+
+2. Compare the mean of these sampling distributions to the theoretical value of the mean of the geometric distribution given in the book.
+
+First: increase the sample size:
+
+```{r}
+N=10^4
+sampdist <- numeric(N)
+for (i in 1:N)
+{SampFromGeometric <- rgeom(10,basketsuccess)
+sampdist[i] <- mean(SampFromGeometric)}
+
+hist(sampdist, freq=F)
+
+mean(sampdist)
+
+```
+
+
+```{r}
+N=10^4
+sampdist <- numeric(N)
+for (i in 1:N)
+{SampFromGeometric <- rgeom(50,basketsuccess)
+sampdist[i] <- mean(SampFromGeometric)}
+
+hist(sampdist, freq=F)
+
+mean(sampdist)
+
+```
+
+
+```{r}
+N=10^4
+sampdist <- numeric(N)
+for (i in 1:N)
+{SampFromGeometric <- rgeom(250,basketsuccess)
+sampdist[i] <- mean(SampFromGeometric)}
+
+hist(sampdist, freq=F)
+
+mean(sampdist)
+
+```
+As the size of the sample increases the closer the sampling distribution is to normal.
+
+
+Next: Notice the mean of the sampling distribution is about 5.667.
+
+Remember R is counting number of failures until success (as opposed to number of attempts including the final successful one). The mean of the above sampling distribution is the average number of failures (that preceed a single success). 
+
+Reconcile that with the mean value given in the book, which counts the failures *and* the single success:  (see Appendix C.)
+
+```{r}
+1/basketsuccess
+```
+
+The sampling distribution of a geometric distribution appears to be normal if the sample size is big enough.  Moreover, the means of the two distributions are the same.  We'll come back to this....
+
+
+Exponential
+----
+
+The *exponential* distribution is a continuous version of the *geometric* distribution. It is also a "waiting" distribution.  While geometric is the number of times you have to wait, exponential is how long you have to wait. 
+
+Let $T$ be the random variable that measures the time between eruptions of an active volcano. This distribution takes a parameter $\lambda$ which is a *rate parameter*.  
+
+Say here the recorded rate of eruptions is 3 per year.  The value of the parameter is $\lambda =3$ eruptions per year.  
+
+Sometimes it's easier to think about the time between events.  Here, $\frac{1}{\lambda}=\frac{1}{3}$ years between eruptions.
+
+
+What is the probability there will be an eruption in the next 6 months, $P\left(T \leq \frac{1}{2}\right)$
+
+```{r}
+pexp(1/2, 3)
+```
+
+Here is an example of q$dist$: 
+
+For how long will I have to wait to be 90% certain of seeing an eruption?  That is $t$ such that $P(T \leq t)=0.9$.
+
+```{r}
+qexp(.9,3)
+```
+
+remember the units: years.
+
+
+For continuous distributions, here is a nice way to plot the distribution.  You will need to install the package 'ggfortify' first.  Do that in the console window, NOT in the rmarkdown file.
+
+The following is a graph of the pdf. Remember, area under the curve corresponds to probability.
+
+```{r}
+library(ggfortify)
+ggdistribution(dexp, seq(0, 3, 0.1), rate=3)
+```
+
+Mostly for comparison, the following graph is the cdf:
+
+```{r}
+library(ggfortify)
+ggdistribution(pexp, seq(0, 3, 0.1), rate=3)
+```
+
+
+Uniform distribution
+----
+
+Something that has the same chance of happening anytime in the next $T$ minutes has a *uniform* distribution.  
+
+This one is pretty easy to write down. The distribution is $$f(t)=\frac{1}{T}$$ for $0 \leq t \leq T$, and 0 otherwise.
+
+```{r}
+#dunif()
+```
+
+Here is a plot of the distribution (i.e. pdf) if the event has equal chance of happening anytime between $t=2$ and $t=13$.
+
+```{r}
+library(ggfortify)
+ggdistribution(dunif, seq(-3, 23, 0.1), min=2, max=13)
+```
+
+What is the probability that the event will happen by $t=10$?
+
+```{r}
+punif(10, 2, 13)
+```
+
+If I want to be 70% sure that I wait long enough for the event to occur, how long should I wait?
+
+```{r}
+qunif(.7, 2, 13)
+```
+
+And finally, to illustrate the interesting phenomom from ealier.  Let's simulate a sampling distribution of the mean of a sample with size $n=7$.
+
+```{r}
+N=10^4
+SampDist <- numeric(N)
+for (i in 1:N)
+{SampFromUnif <- runif(7,2,13)
+SampDist[i] <- mean(SampFromUnif)}
+
+hist(SampDist)
+mean(SampDist)
+```
+
+Hmmm.  Sampling distributions of the mean seem to be approximately normal and their mean seems to be predicatable!  That should be worth something.
+
+
