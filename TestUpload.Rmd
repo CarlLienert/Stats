@@ -1,0 +1,28 @@
+---
+title: "ExamOne"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+*Run the following chunk*
+
+```{r}
+TestData <- read.csv("https://www.dropbox.com/s/h8lkjdqoqui3bzw/TestDownload2.csv?dl=1")
+head(TestData)
+```
+
+*Compute the mean of GroupA and of GroupB.*
+
+*Did you use a Mac or a PC?*
+
+*Did you have any trouble uploading the data or computing the means?*
+
+
+
+
+
+
