@@ -1,0 +1,743 @@
+---
+title: "Exam_One_A"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+# Terminology
+1. What is the difference between a *population* and a *sample*?
+
+Answer: 
+
+
+2. What is the difference between a *statistic* and a *parameter*.  Give an example of a *statistic*.
+
+Answer:
+
+
+3. In a data set, what is the difference between an *observation* and a *variable*?
+
+Answer:
+
+
+
+# Exploratory Data Analysis
+
+Use one of the following two chunks to load the data set `Alelager`.
+
+If you have the `resampledata` package installed use:
+
+```{r}
+library(resampledata)
+BeerData<-Alelager
+head(BeerData)
+```
+
+**or**, you can use:
+
+```{r}
+BeerData<-read.csv("https://sites.google.com/site/chiharahesterberg/data2/Alelager.csv")
+head(BeerData)
+```
+
+1. Create side-by-side box plots of the alcohol content, grouped by beer type. Comment on the information the box plots convey.
+
+```{r}
+
+```
+
+Commentary: 
+
+
+2. Create a histogram of the calorie content of all beers in the data set. Describe the distribution.
+```{r}
+
+```
+
+Description of distribution:
+
+3.  Sampling Distribution
+*	Simulate the sampling distribution of the mean of the number of calories, for samples of size 3.
+		
+```{r}
+
+```
+
+
+
+*	Create a histogram and describe the simulated sampling distribution.
+		
+```{r}
+
+```
+
+
+Description of sampling distribution:		
+		
+*	Use the simulation to find the probability that the average calorie content of 3 beers is less than 150 calories.
+		
+```{r}
+```
+		
+* Use the simulation to find the probability that the average calorie content of 3 beers is more than 160 calories.
+  
+```{r}
+```
+  
+  
+4. The following code generates two ecdfs, one for calories of ales, one for calories of lagers. 
+ 
+```{r}
+Ales <- subset(BeerData, select=Calories, subset=Type=="Ale", drop=T)
+Lagers <- subset(BeerData, select=Calories, subset=Type=="Lager", drop=T)
+#plot.new()
+plot.ecdf(Ales, col="red")
+plot.ecdf(Lagers, col="blue", add=TRUE)
+abline(v=165)
+```
+
+What percentage of ales in the data set have less than 165 calories? 
+
+What percentage of lagers in the data set have less than 165 calories?
+
+
+# Permutation test
+
+Conduct a permutation test to determine whether there is a difference in the mean calorie content between ales and lagers. Your test should start with a statement of the formal hypotheses and finish with a conclusion.
+
+Put each step in its own chunk and **clearly explain what each chunk is doing and what information the output provides.**
+
+```{r}
+
+```
+
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+(I put in several r-chunks.  You might use more, you might use fewer.)
+
+
+# Critical reading
+
+Below, I conduct a permutation test to test whether there was, on average, a difference in the annual snow fall in Colorado in the years 2019 and 2020.  Identify the mistake and fix it.
+
+First, we load and briefly inspect the data:
+```{r}
+SnowData <- read.csv("https://www.dropbox.com/s/h8lkjdqoqui3bzw/TestDownload2.csv?dl=1")
+head(SnowData)
+```
+
+The data shows annual snow fall recorded at 51 NOAA weather station in Colorado in 2019, and 2020. 
+
+
+The formal statements of the hypotheses are:
+
+$$H_0: \mu_{d_{2020}-d_{2019}}=0$$
+
+$$H_A: \mu_{d_{2020}-d_{2019}}\neq 0$$
+
+where $d_{2020}-d_{2019}$ represents the difference in snow fall by station. 
+
+We'll compute the difference in snowfall at each station and compute the observed mean of differences:
+
+```{r}
+DiffAtStations<-SnowData$Snow2020-SnowData$Snow2019
+Observed<-mean(DiffAtStations)
+Observed
+```
+
+Next, we'll pool the data in order to find a permutation distribution:
+
+```{r}
+PooledData<- c(SnowData$Snow2020, SnowData$Snow2019)
+```
+
+Here is the loop that generates a permutation distribution:
+
+
+```{r}
+N=10^4
+SampleDist<-numeric(N)
+for (i in 1:N)
+{index<-sample(102,51, replace=F)
+SampleDist[i]<- mean(PooledData[index]-PooledData[-index])}
+```
+
+
+
+Finally, we compute the $p$-value for our observed statistic:
+
+```{r}
+2*min((sum(SampleDist >= Observed)+1)/(N+1),
+(sum(SampleDist <= Observed)+1)/(N+1))
+```
+
+Since the $p$-value is small we reject the null hypothesis and conclude that the mean difference in snow depth between 2019 and 2020 was different.
+
+
+
+**Your notes are below.  Do NOT delete the following chunk or your file may not knit.
+```{r}
+knitr::knit_exit()
+```
+
+
+
+
+**Chapter 1** Mostly terminology. Short answer related to terminology.
+
+Temrinology:
+
+*Observation* each row of the data set 
+
+*Variable* some characteristic that is obtained for each observation
+
+*Numeric variable* i.e. number indicates whether the baby was a single birth, or one of a twin, triplet, and so on
+
+*Factor variable* i.e. indicating whether or not the baby was a multiple birth
+
+*Random variable* is a function whose input is the result of an experiment and whose output is a numerical value. Random variables are denoted with capital letters, typically $X$, $Y$ etc.
+
+*Population* represents all the individual cases 
+
+*Random sample* to mean a sample of independent and identically distributed (i.i.d.) observations from the population
+
+*Sampling with replacement* take sample and replace in population (i.e draw a marble then put it back)
+
+*Sampling without replacement* take sample but only use each observation 1 time (i.e. draw marble and keep it after)
+
+*Parameter* is a (numerical) characteristic of a population or
+of a probability distribution
+
+*Statistic* is a (numerical) characteristic of data
+
+*Statistical inference*, drawing a conclusion about a population based
+on information about a sample
+
+*Sampling frame* a list from which the researchers will choose their sample
+
+*Observational study* a study in which researchers observe participants but do not
+influence the outcome, no cause-and-effect conclusions can be drawn
+
+*Experimental study* in an experiment, researchers will manipulate the environment in some
+way to observe the response of the objects of interest (people, mice, ball bearings, etc.)
+
+*Treatments* ways the experiment is manipulated by the researchers
+
+*Random assignment* to spread out unknown and uncontrollable factors to reduce unwanted variability
+
+*Double-blind* experiment is one in which neither the researcher nor the subject
+knows who is receiving which treatment
+
+Experiment is *single-blinded* if just the researcher or the subject (but not both) knows who is receiving which treatment (blinding reduces bias)
+
+**Chapter 2** Exploratory data analysis. Produce and interpret R output for a given data set. Questions may include you providing the code, and the code/output being provided for you to comment on.
+
+# 2.1 Basic Plots
+
+Options for loading data:
+
+```{r}
+FlightData <-  read.csv("https://sites.google.com/site/chiharahesterberg/data2/FlightDelays.csv")
+head(FlightData)
+```
+
+To create a simple bar plot:
+
+```{r}
+barplot(table(FlightData$Carrier))
+```
+
+Create a table:
+
+```{r}
+table(FlightData$Carrier)
+```
+
+The contingency tables are generated with:
+It is **ALWAYS** important to think critically about the output
+```{r}
+table(FlightData$Carrier, FlightData$Delayed30)
+prop.table(table(FlightData$Carrier, FlightData$Delayed30))
+prop.table(table(FlightData$Carrier, FlightData$Delayed30),1)
+prop.table(table(FlightData$Carrier, FlightData$Delayed30),2)
+```
+
+histogram (distribution):
+
+```{r}
+hist(FlightData$Delay)
+```
+
+Sorting data:
+
+```{r}
+UAOnly <- subset(FlightData, subset=Carrier=="UA")
+dim(UAOnly)
+```
+```{r}
+hist(UAOnly$Delay)
+```
+
+If you want to control the width of the category bars:
+
+```{r}
+min(UAOnly$Delay)
+max(UAOnly$Delay)
+width=seq(-50,400, by=25)
+width
+hist(UAOnly$Delay, breaks=width)
+```
+
+Here is a nice way to quickly obtain a more focused answer.  Say we want mean delay by Carrier:
+
+```{r}
+tapply(FlightData$Delay, FlightData$Carrier, mean)
+```
+
+Box plots are a convenient way to view spread graphically:
+
+```{r}
+boxplot(FlightData$Delay~FlightData$Carrier)
+```
+
+Omit NA:
+
+```{r}
+remove=na.omit(Rdata)
+boxplot(remove$Days~remove$Type)
+```
+
+*qqplot*: The closer these points come to being on a straight line the more *normal* the distrubution.
+
+```{r}
+plot.new()
+qqnorm(Spruce$Height5)
+qqline(Spruce$Height5)
+```
+
+**empircal cummulative distribution function** (ecdf):
+
+```{r}
+plot.new()
+plot.ecdf(smoker, col="red")
+plot.ecdf(nonsmoker, col="blue", add=TRUE)
+abline(v=3000)
+```
+
+EX: e) Create ecdf's of days to recidivism for those under age 25 and those older than 25
+```{r}
+U25 <- subset(Rdata, select=Days, subset=Age25=="Under 25", drop=T)
+O25 <- subset(Rdata, select=Days, subset=Age25=="Over 25", drop=T)
+plot.ecdf(U25, col="red")
+plot.ecdf(O25, col="blue", add=TRUE)
+abline(v=400)
+```
+
+*Skewness* reflects how symmetric (or nonsymmetric) a distribution is. 
+
+* a positive number means skewed right
+* a negative number means skewed left
+* the farther the number is from zero, the more skewed it is
+
+*Kurtosis* reflects high peaks (higer than a normal distribution) and longer tails (again, as compared to a normal distribution)
+
+* For now, we'll content ourselves with: the farther the Kurtosis is from 0, the more "un" normal the distribution
+
+```{r}
+library(moments) 
+skewness(smoker)
+skewness(nonsmoker)
+kurtosis(smoker)
+kurtosis(nonsmoker)
+```
+
+**Chapter 3** Chapter 3: Permutation tests.  
+Perform a permutation test (there are two versions in this chapter: matched pairs, un-matched).  This should include all the steps from stating the hypotheses to making the conclusion.  Note on kitchen sink strategy: your solution should include everything needed and nothing more.
+Be able to explain - in words - the process of a permutation test.  
+Read and fix a faulty permutation test.  This might include fixing code, providing a missing step, removing irrelevant steps, etc. you
+
+Idea of hypothesis testing
+-----
+The *null hypothesis* is $$H_0: \mu_{UA}-\mu_{AA}=0.$$
+
+The *hypothesis test* looks for evidence to reject the null hypthesis in favor of the *alternative hypothesis*:
+
+$$H_A: \mu_{UA}-\mu_{AA}\neq 0.$$  
+
+This is a *two-sided* test as opposed to the mice example which was a *one sided* test.  We'll multiply the probabiliy we obtain in the end by 2.
+
+If, after our resampling process, the probability of obtaining an outcome as extreme or more extreme than the observed outcome is *small* then we have evidence in favor of the alternative hypothesis.
+
+If the probability is NOT small this **DOES NOT** mean that the null hypothesis is true.  It means there is not statistical evidence to support rejecting the null hypothesis.
+
+Hypothesis test statements:
+
+$$H_0: p_{May}-p_{June}=0$$
+
+$$H_A: p_{May}-p_{June}\neq 0$$
+
+Load the data. Create two subsets, one each for May and June.
+
+```{r}
+library(resampledata)
+delays <- FlightDelays
+Maydelays <- subset(delays, select=Delay, subset=Month=="May", drop=T)
+Junedelays <- subset(delays, select=Delay, subset=Month=="June", drop=T)
+
+```
+
+Look at the three vectors and their sizes to make sure they seem like the right thing.
+
+```{r}
+length(Maydelays)
+length(Junedelays)
+length(delays$Delay)
+```
+
+Create subsets of delays more than 20 minutes.  Again look at the vectors and their sizes to make sure they are the right thing.
+
+```{r}
+May20 <- subset(Maydelays, subset=Maydelays>20)
+length(May20)
+length(Maydelays)
+June20 <- subset(Junedelays, subset=Junedelays>20)
+#June20
+```
+
+Computation of proportions:
+
+```{r}
+length(May20)/length(Maydelays)
+length(June20)/length(Junedelays)
+```
+
+Or, another way to do this:
+
+Compute the proportion of delays more than 20 minutes in each month:
+```{r}
+PropMay <- (sum(Maydelays>20))/(length(Maydelays))
+PropMay
+PropJune <- (sum(Junedelays>20))/(length(Junedelays))
+PropJune
+```
+
+```{r}
+sum(Maydelays>20)
+```
+
+Look at the vectors that are in the lines of code above.  To see that they are the "right" thing and that I "count" them in the correct manner.
+
+Compute the *observed* difference in proportions:
+```{r}
+observed <- PropMay-PropJune
+observed
+```
+
+```{r}
+boxplot(delays$Delay~delays$Month)
+```
+
+Pool the data and record the size of 1) the pooled data, and 2) the size of the two groups:
+
+```{r}
+alldelays <- delays$Delay
+poolsize <- length(alldelays)
+poolsize
+GroupOneSize <- length(Maydelays)
+GroupOneSize
+GroupTwoSize <- length(Junedelays)
+GroupTwoSize
+```
+
+Run a resampling permutation test:
+
+```{r}
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(poolsize,size=GroupOneSize, replace=F)
+result[i] <- (sum(alldelays[index]>20)/GroupOneSize)-(sum(alldelays[-index]>20)/GroupTwoSize)
+} 
+```
+
+Look at results of the permutation test:
+
+```{r}
+hist(result)
+```
+
+Compute probability of an outcome at least as extreme as the observed outcome:
+
+```{r}
+2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+```
+
+At the 0.05 level we can conclude there is a significant differnce in the proportion of delays over 20 minutes in the months of May vs. June. At the 0.01 level we cannot make this conclusion.
+
+*Matched Pairs*
+
+Instead, we will randomly decide to swap data points *within the same matched pair* when we resample.
+
+```{r}
+library(resampledata)
+head(IceCream)
+```
+
+We want to make sure we compute the differences in the matched pairs:
+
+```{r}
+DiffInPairs <- IceCream$VanillaCalories-IceCream$ChocolateCalories
+DiffInPairs
+observed <- mean(DiffInPairs)
+observed
+```
+
+```{r}
+summary(DiffInPairs)
+sd(DiffInPairs)
+```
+
+So, in the observed outcome chocolate ice cream has more calories on average.
+
+To swap values, we'll randomly compute:
+
+Chocolate - Vanilla 
+
+instead of 
+
+Vanilla - Chocolate.
+
+This is easy to do: we pick random rows from the data and multiply the difference by $-1$.
+
+First, we need to know how many observations there are in the data:
+
+```{r}
+poolsize <- length(IceCream$Brand)
+poolsize
+```
+```{r}
+```
+
+
+Next, we create a vector of $\pm 1$:
+
+```{r}
+sample(c(-1,1), poolsize, replace=T)
+```
+
+We're ready to conduct the permutation test for *matched pairs*:
+
+```{r}
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{Sign <- sample(c(-1,1), poolsize, replace=T) #random swapping assignment
+  Diff <- Sign*DiffInPairs #compute differences within matched pairs
+result[i] <- mean(Diff) #assign the mean of the differences to the result vector
+} 
+```
+
+Look at result:
+```{r}
+hist(result)
+```
+
+Compute $p$-value:
+
+```{r}
+min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+```
+
+So, since the $p$-value is small we have evidence to reject the null hypothesis and conclude that there is a difference in calories between vanilla and chocolate ice cream.
+
+**Chapter 4** Understand what a sampling distribution is and be able to generate and display one with R. 
+
+The following data set contains finish times from the Chicago Marathon.  I don't know what subset of times this is. But, we are going to pretend this is the *population.*  That is, pretend it is *all* times, or even *all* marathon times. It would be difficult to collect *all* marathon times, but not difficult to sample marathon times. We could compute the mean time from our sample.  But, that raises the question if our sample was a *good* sample. Maybe the next sample produces a different mean time, etc.  
+
+Repeating this -  sample, and calculate the mean time - produces a *sampling distribution*.  This will be a distribution against which we can compare an oberserved statistic.
+
+Here is the data set:
+
+```{r}
+library(resampledata)
+head(ChiMarathonMen)
+```
+
+```{r}
+summary(ChiMarathonMen$FinishMin)
+```
+
+These are pretty fast times, but not world class fast.
+
+Here is the distribution of the *population*:
+
+```{r}
+hist(ChiMarathonMen$FinishMin)
+```
+
+ we'd assume something like this: there are only a few *really* fast time, then things are fairly *uniform*.
+
+choose a sample of 6 times, calculate the mean, store that result, repeat...
+
+Here is one pass of the simulation:
+
+```{r}
+mysample <- sample(ChiMarathonMen$FinishMin, size=6,replace=F)
+mean(mysample)
+```
+
+Here is the simulation:
+
+```{r}
+N=10^4
+Xbar <- numeric(N)
+for (i in 1:N)
+  {mysample <- sample(ChiMarathonMen$FinishMin, size=6,replace=F)
+  Xbar[i] <- mean(mysample)}
+```
+
+Here is the *sampling distribution*.  It is the sampling distribution of the mean of a sample of size 6.  This is often denoted $\overline{X}$.  $\overline{X}$ is the random variable.
+
+```{r}
+hist(Xbar)
+```
+
+The mean and standard deviation for the population - that is the *parameters* - are:
+
+```{r}
+mean(ChiMarathonMen$FinishMin)
+sd(ChiMarathonMen$FinishMin)
+```
+
+The mean and *standard error*  (the standard deviation of a sample is called the *standard error*) of the *sampling distribution* - that is the *statistics* - are:
+
+```{r}
+mean(Xbar)
+sd(Xbar)
+```
+
+Notice:
+* The two mean values are very close to one another.
+* The two standard deviations are not, but:
+
+```{r}
+sd(ChiMarathonMen$FinishMin)/sqrt(6)
+```
+
+Minimum ex:
+
+```{r}
+mysample <- sample(ChiMarathonMen$FinishMin, size=6,replace=F)
+min(mysample)
+```
+
+
+```{r}
+N=10^4
+Xmin <- numeric(N)
+for (i in 1:N)
+  {mysample <- sample(ChiMarathonMen$FinishMin, size=6,replace=F)
+  Xmin[i] <- min(mysample)}
+```
+
+Here is the sampling distribution for $X_{min}$:
+```{r}
+hist(Xmin)
+```
+
+```{r}
+mean(ChiMarathonMen$FinishMin)
+sd(ChiMarathonMen$FinishMin)
+```
+
+```{r}
+mean(Xmin)
+sd(Xmin)
+```
+
+Dot plot of distribution:
+```{r}
+width=seq(0,20, by=1)
+#width
+hist(pop, breaks=width)
+```
+
+Code Ex:
+
+Establish populations:
+```{r}
+A <- c(3, 5, 7, 9, 10, 16) 
+B <- c(8, 10, 11, 15, 18, 25, 28)
+```
+
+Sample the populations:
+```{r}
+mysampleA <- sample(A, size=3,replace=F)
+max(mysampleA)
+mysampleB <- sample(A, size=3,replace=F)
+max(mysampleB)
+```
+
+Simulations:
+```{r}
+N=10^4
+XmaxA <- numeric(N)
+for (i in 1:N)
+  {mysampleA <- sample(A, size=3,replace=F)
+  XmaxA[i] <- max(mysampleA)}
+
+N=10^4
+XmaxB <- numeric(N)
+for (i in 1:N)
+  {mysampleB <- sample(B, size=3,replace=F)
+  XmaxB[i] <- max(mysampleB)}
+```
+
+Plot results for sum of maxes:
+```{r}
+hist(XmaxA+XmaxB)
+```
+
+Summary stats for sum of maxes:
+```{r}
+mean(XmaxA+XmaxB)
+sd(XmaxA+XmaxB)
+skewness(XmaxA+XmaxB)
+```
+
+For sum of maxes:
+```{r}
+mean(XmaxA+XmaxB < 20)
+```
