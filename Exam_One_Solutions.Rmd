@@ -1,0 +1,243 @@
+---
+title: "Exam_One_A"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+# Terminology
+1. What is the difference between a *population* and a *sample*?
+
+Answer: 
+
+
+2. What is the difference between a *statistic* and a *parameter*.  Give an example of a *statistic*.
+
+Answer:
+
+
+3. In a data set what is the difference between an *observation* and a *variable*?
+
+Answer:
+
+
+
+# Exploratory Data Analysis
+
+Load the data set `Alelager`; use one of the following chunks:
+
+If you have the `resampledata` package installed use:
+
+```{r}
+library(resampledata)
+BeerData<-Alelager
+head(BeerData)
+```
+
+**or**, you can use:
+
+```{r}
+BeerData<-read.csv("https://sites.google.com/site/chiharahesterberg/data2/Alelager.csv")
+head(BeerData)
+```
+
+1. Create side-by-side box plots of the alcohol content, grouped by beer type. Comment on the information the box plots convey.
+
+```{r}
+boxplot(BeerData$Alcohol~BeerData$Type)
+```
+
+
+
+2. Create a histogram of the calorie content of all beers i the data set. Describe the distribution.
+```{r}
+hist(BeerData$Calories)
+```
+
+3.  Sampling Distribution
+		* Simulate the sampling distribution of \(\overline{x}\) of the number of calories, for sample of size 3.
+		
+```{r}
+N=1000
+sampledist <- numeric(N)
+for (i in 1:N)
+{samp <- sample(BeerData$Calories, 7, replace=F)
+sampledist[i] <- mean(samp)}
+```
+
+
+
+		* Create a histogram and describe the simulated sampling distribution.
+		
+```{r}
+hist(sampledist)
+```
+		
+		
+		* Use the simulation to find the probability that the average calorie content of 3 beers is less than 150 calories.
+		
+```{r}
+mean(sampledist < 150)
+```
+		
+  * Use the simulation to find the probability that the average calorie content of 3 beers is more than 160 calories.
+  
+```{r}
+mean(sampledist > 160)
+```
+  
+4. The following code generates two ecdfs, one for calories of ales, one for calories of lagers. What percentage of ales in the data set have less than 165 calories?  What percentage of lagers in the data set have less than 165 calories?
+ 
+```{r}
+Ales <- subset(BeerData, select=Calories, subset=Type=="Ale", drop=T)
+Lagers <- subset(BeerData, select=Calories, subset=Type=="Lager", drop=T)
+#plot.new()
+plot.ecdf(Ales, col="red")
+plot.ecdf(Lagers, col="blue", add=TRUE)
+abline(v=165)
+```
+
+# Permutation test
+
+Conduct a permutation test to determine whether there is a difference in the mean calorie content between ales and lagers. Your test should start with a statement of the formal hypotheses and finish with a conclusion.
+
+Put each step in its own chunk and clearly explain what each chunk is doing and what information the output provides.
+
+```{r}
+observed <- mean(Ales)-mean(Lagers)
+observed
+```
+
+```{r}
+poolsize <- length(BeerData$Calories)
+poolsize
+group1size <- length(Ales) 
+group1size
+```
+
+```{r}
+N <- 10^4
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(poolsize, group1size, replace=F)
+  result[i] <- mean(BeerData$Calories[index])-mean(BeerData$Calories[-index]) }
+
+hist(result)
+
+2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+```
+
+# Critical reading
+Below, I conduct a permutation test to test whether there was, on average, a difference in the annual snow fall in Colorado in the years 2019 and 2020.  Identify the mistake and fix it.
+
+First, we load and briefly inspect the data:
+```{r}
+SnowData <- read.csv("https://www.dropbox.com/s/h8lkjdqoqui3bzw/TestDownload2.csv?dl=1")
+head(SnowData)
+```
+
+The data shows annual snow fall recorded at 51 NOAA weather station in Colorado in 2019 and 2020. 
+
+
+The formal statements of the hypotheses are:
+
+$$H_0: \mu_{d_{2020}-d_{2019}}=0$$
+
+$$H_A: \mu_{d_{2020}-d_{2019}}\neq 0$$
+
+where \(d_{2019}\) and \(d_{2020}\) are the number of inches of snowfall at a particular station in 2019 and 2020 respectively.
+
+We’ll compute the difference in snowfall at each station and compute the observed mean of differences:
+
+```{r}
+DiffAtStations<-SnowData$Snow2020-SnowData$Snow2019
+Observed<-mean(DiffAtStations)
+Observed
+```
+
+Next, we’ll pool the data in order to find a permutation distribution:
+
+```{r}
+PooledData<- c(SnowData$Snow2020, SnowData$Snow2019)
+```
+
+Here is the loop that generates a sampling distribution (a permutation distribution in this case);
+
+
+```{r}
+N=10^4
+SampleDist<-numeric(N)
+for (i in 1:N)
+{index<-sample(102,51, replace=F)
+SampleDist[i]<- mean(PooledData[index]-PooledData[-index])}
+```
+
+
+
+Finally, we compute the $p$-value for our observed statistic:
+
+```{r}
+2*min((sum(SampleDist >= Observed)+1)/(N+1),
+(sum(SampleDist <= Observed)+1)/(N+1))
+```
+
+Since the $p$-value is small we reject the null hypothesis and conclude that the mean difference in snow depth between 2019 and 2020 was different.
+
+
+```{r}
+observedsnow <- mean(SnowData$Snow2020)-mean(SnowData$Snow2019)
+observedsnow
+```
+```{r}
+which((abs(SnowData$Snow2020-SnowData$Snow2019))>150)
+SnowData$StationName[33]
+```
+
+
+```{r}
+N=10
+samplesnow <- numeric(N)
+DiffInSnow <- SnowData$Snow2020-SnowData$Snow2019
+
+
+for (i in 1:N)
+{Sgn <- sample(c(-1,1), 51, replace=T)
+samplesnow[i] <- mean(Sgn*DiffInSnow)}
+
+hist(samplesnow)
+```
+
+```{r}
+2*min((sum(samplesnow >= observedsnow)+1)/(N+1),
+(sum(samplesnow <= observedsnow)+1)/(N+1))
+```
+
+
+```{r}
+
+N=1000
+samplesnow <- numeric(N)
+DiffInSnow <- SnowData$Snow2020-SnowData$Snow2019
+
+ModInSnow <- DiffInSnow[abs(DiffInSnow)<150]
+length(ModInSnow)
+
+observedsnow <- mean(ModInSnow)
+observedsnow
+
+for (i in 1:N)
+{Sgn <- sample(c(-1,1), 50, replace=T)
+samplesnow[i] <- mean(Sgn*ModInSnow)}
+
+hist(samplesnow)
+
+2*min((sum(samplesnow >= observedsnow)+1)/(N+1),
+(sum(samplesnow <= observedsnow)+1)/(N+1))
+```
