@@ -1,0 +1,360 @@
+---
+title: "Exam_One_A"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+# Terminology
+1. What is the difference between a *population* and a *sample*?
+
+Answer: 
+
+
+2. What is the difference between a *statistic* and a *parameter*.  Give an example of a *statistic*.
+
+Answer:
+
+
+3. In a data set, what is the difference between an *observation* and a *variable*?
+
+Answer:
+
+
+
+# Exploratory Data Analysis
+
+Use one of the following two chunks to load the data set `Alelager`.
+
+If you have the `resampledata` package installed use:
+
+```{r}
+library(resampledata)
+BeerData<-Alelager
+head(BeerData)
+```
+
+**or**, you can use:
+
+```{r}
+#BeerData<-read.csv("https://sites.google.com/site/chiharahesterberg/data2/Alelager.csv")
+head(BeerData)
+```
+
+1. Create side-by-side box plots of the alcohol content, grouped by beer type. Comment on the information the box plots convey.
+
+```{r}
+
+```
+
+Commentary: 
+
+
+2. Create a histogram of the calorie content of all beers in the data set. Describe the distribution.
+```{r}
+
+```
+
+Description of distribution:
+
+3.  Sampling Distribution
+*	Simulate the sampling distribution of the mean of the number of calories, for samples of size 3.
+		
+```{r}
+
+```
+
+
+
+*	Create a histogram and describe the simulated sampling distribution.
+		
+```{r}
+
+```
+
+
+Description of sampling distribution:		
+		
+*	Use the simulation to find the probability that the average calorie content of 3 beers is less than 150 calories.
+		
+```{r}
+```
+		
+* Use the simulation to find the probability that the average calorie content of 3 beers is more than 160 calories.
+  
+```{r}
+```
+  
+  
+4. The following code generates two ecdfs, one for calories of ales, one for calories of lagers. 
+ 
+```{r}
+Ales <- subset(BeerData, select=Calories, subset=Type=="Ale", drop=T)
+Lagers <- subset(BeerData, select=Calories, subset=Type=="Lager", drop=T)
+#plot.new()
+plot.ecdf(Ales, col="red")
+plot.ecdf(Lagers, col="blue", add=TRUE)
+abline(v=165)
+```
+
+What percentage of ales in the data set have less than 165 calories? 
+
+What percentage of lagers in the data set have less than 165 calories?
+
+
+# Permutation test
+
+Conduct a permutation test to determine whether there is a difference in the mean calorie content between ales and lagers. Your test should start with a statement of the formal hypotheses and finish with a conclusion.
+
+Put each step in its own chunk and **clearly explain what each chunk is doing and what information the output provides.**
+
+```{r}
+
+```
+
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+(I put in several r-chunks.  You might use more, you might use fewer.)
+
+
+# Critical reading
+
+Below, I conduct a permutation test to test whether there was, on average, a difference in the annual snow fall in Colorado in the years 2019 and 2020.  Identify the mistake and fix it.
+
+First, we load and briefly inspect the data:
+```{r}
+SnowData <- read.csv("https://www.dropbox.com/s/h8lkjdqoqui3bzw/TestDownload2.csv?dl=1")
+head(SnowData)
+```
+
+The data shows annual snow fall recorded at 51 NOAA weather station in Colorado in 2019, and 2020. 
+
+
+The formal statements of the hypotheses are:
+
+$$H_0: \mu_{d_{2020}-d_{2019}}=0$$
+
+$$H_A: \mu_{d_{2020}-d_{2019}}\neq 0$$
+
+where $d_{2020}-d_{2019}$ represents the difference in snow fall by station. 
+
+We'll compute the difference in snowfall at each station and compute the observed mean of differences:
+
+```{r}
+DiffAtStations<-SnowData$Snow2020-SnowData$Snow2019
+Observed<-mean(DiffAtStations)
+Observed
+```
+
+Next, we'll pool the data in order to find a permutation distribution:
+
+```{r}
+PooledData<- c(SnowData$Snow2020, SnowData$Snow2019)
+```
+
+Here is the loop that generates a permutation distribution:
+
+
+```{r}
+N=10^4
+SampleDist<-numeric(N)
+for (i in 1:N)
+{index<-sample(102,51, replace=F)
+SampleDist[i]<- mean(PooledData[index]-PooledData[-index])}
+```
+
+
+
+Finally, we compute the $p$-value for our observed statistic:
+
+```{r}
+2*min((sum(SampleDist >= Observed)+1)/(N+1),
+(sum(SampleDist <= Observed)+1)/(N+1))
+```
+
+Since the $p$-value is small we reject the null hypothesis and conclude that the mean difference in snow depth between 2019 and 2020 was different.
+
+
+
+**Your notes are below.  Do NOT delete the following chunk or your file may not knit.
+```{r}
+knitr::knit_exit()
+```
+
+
+Chapter 1:
+Statistics is the art and science of colleccting and analyzing data
+Observation: A row in a data set
+Variable: each column, some characteristic that is obtained for each observation
+Population: represents all of the individual cases. Can be finite (babies born in 2004) or infinite (coin tosses)
+Sample: A portion of the population
+Random Sample: Any sample obtained using a random procedure
+Parameter: A numerical characteristic of a population or of a probability distribution (such as the average weight of all babies born in 2005)
+Statistic: A numerical characteristic of data (such as the average weight of 2500 sampled babies born in 2005)
+Statistics estimate parameters
+Sampling frame: A list from which researchers will choose their sample
+Undercoverage: Omitting people from the target population in a survey
+Probability sampling scheme: a scheme that gives everybody in the population a positive chance of being selected.
+Stratified sampling: The population is divided into nonoverlapping strata, and then random samples are drawn from each stratum
+Cluster Sampling: The population is divided into nonoverlappinig clusters, and then a random sample of clusters is drawn
+Multistage sampling
+Observational Study: A study in which researchers observe participants but do not influence the outcome
+Expirement: Researchers will manipulate the environment in some way to observe the response of the objects of interest
+Subject: When the objecct of interest in an expirement is a person
+Expiremental Unit: When the object of interest in an expirement is not a person
+Treatment: The "influence" in an expirement
+Random assignment: Spread out the effeccts of unknowsn or uncontrollable factors that might influence results
+Double Blind Expirement: One in which neither the researcher nor the subject knows who is receiving which treatment
+Single Blinded Expirement: Just the researcher or subject (not both) know which treatment they are receiving
+Bias: The systematic favoring of one outcome over another
+Numeric Variable: A numeric variable
+Factor Variable: A string variable
+Random Variable: Variable dependent on outcome for some chance process 
+Statistical Interference: Drawing a conclusion about a popultion based on information about a sample
+
+Chapter 2:
+read.csv("https://sites.google.com/site/chiharahesterberg/data2/FILENAME.csv")
+
+table(Recidivism$Recid,Recidivism$Age25)
+prop.table(table(Recidivism$Recid,Recidivism$Age25),2)
+
+boxplot(FlightData$FlightLength~FlightData$Delayed30)
+
+barplot(Table)
+
+quantile(Recidivism$Days, na.rm = TRUE)
+
+subset(Recidivism, select=Days, subset=Age25=="Under 25", drop=T)
+plot.new()
+plot.ecdf(U25, col="red")
+
+summary(Spruce$Ht.change)
+
+hist(Spruce$Ht.change)
+qqnorm(Spruce$Ht.change)
+qqline(Spruce$Ht.change)
+
+tapply(Spruce$Di.change, Spruce$Fertilizer, summary) Gives summary of multiple items at once (in this case diameter change based on fertilizer used or not)
+
+Chapter 3:
+Hypothesis Testing Steps:
+times=c(30, 25, 20, 18, 21, 22) Vector of all tested values
+druggroup <- combn(times,3) finds all the different ways 3 values can be pulled out of times
+
+druggroup[,1] pulls out the first column, observed outcome
+mean(druggroup[,1]) finds mean of values from observed outcome
+
+choose(6,3) Tells us the numerical value of the number of different ways 3 values could have been pulled out of times
+
+controlgroup <- matrix(data=0, nrow=3, ncol=choose(6,3))
+for (i in 1:20)
+  for (j in 1:3)
+    controlgroup[j,i]=setdiff(times, druggroup[,i])[j]
+controlgroup
+List the not listed values in each of the druggroup listinigs
+
+mean(controlgroup[,1]) Finds the mean of the not listed values in the observed outcome
+mean(druggroup[,1])-mean(controlgroup[,1])
+
+colMeans(druggroup)-colMeans(controlgroup) Shows all the difference of mean values
+
+sum(colMeans(druggroup)-colMeans(controlgroup)>= mean(druggroup[,1])-mean(controlgroup[,1])) Finds the number of times that the differnece of means for the observed outcome was greater than the difference of means for other possible outcomes. Divide this by the total number of ways the values could have been pulled out to see if it is significant. A p value of .05 or smaller is significant.
+
+Permutation Test (Un-Matched Pairs):
+The "Null Hypothesis" is that the means of the values being looked at is = 0 (Such as the mean of United Airlines delays and American Airlines delays)
+The purpose of this test is to reject that, and say that they are not equal
+Two-sided test, multiply final probibility by 2
+1. Find differenc of means
+2. Boxplot
+3. Find the length of each observation length(value) and add them for a total length
+4. Theoretically, we would look at all possibilites, but some values are too big to do that. This is a for loop to combat this:
+
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(4029,size=1123, replace=F)
+result[i] <- mean(alldelays[index])-mean(alldelays[-index])
+} 
+
+N = number of times resampling
+result = a vector storing the results of each resample
+
+5. Plot a histogram and a line showing the location of the observed value
+hist(result)
+abline(v=observed, col="blue")
+
+6.  To compute the area in both tails, p-value
+sum(result>=observed)
+sum(result<=observed)
+
+2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+
+Permutation Test (Matched Pairs):
+In this case, we need to randomly "switch" variables between observations (Like the number of vanilla calories with the number of chocolate calories)
+
+1. Find Difference of pairs, then find the mean
+DiffInPairs <- IceCream$VanillaCalories-IceCream$ChocolateCalories
+DiffInPairs
+observed <- mean(DiffInPairs)
+observed
+
+2. Find the number of total variables in each observation
+3. Create a random vector of 1 and -1
+sample(c(-1,1), poolsize, replace=T)
+4. Permutation Test for loop for matched pairs:
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{Sign <- sample(c(-1,1), poolsize, replace=T) #random swapping assignment
+  Diff <- Sign*DiffInPairs #compute differences within matched pairs
+result[i] <- mean(Diff) #assign the mean of the differences to the result vector
+} 
+
+5. Plot result on histogram and a line showing the location of the observed value
+
+6. Find p-value
+
+Chapter 4:
+Dot Plot:
+stripchart(VARIABLE, method="stack", at=0)
+
+Sampling Distribution
+1. Find Mean, standard Deviation, and plot the population or sample
+2. To simulate the sampliling distribution of Xbar do this forloop
+N=10^4
+Xbar <- numeric(N)
+for (i in 1:N)
+  {mysample <- sample(VARIABLE, size=SIZE,replace=F)
+  Xbar[i] <- mean(mysample)}
+  
+3. Find mean and SD of Xbar, STATISTICS

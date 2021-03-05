@@ -1,0 +1,569 @@
+---
+title: "Exam_One_A"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+# Terminology
+1. What is the difference between a *population* and a *sample*?
+
+Answer: 
+
+
+2. What is the difference between a *statistic* and a *parameter*.  Give an example of a *statistic*.
+
+Answer:
+
+
+3. In a data set, what is the difference between an *observation* and a *variable*?
+
+Answer:
+
+
+
+# Exploratory Data Analysis
+
+Use one of the following two chunks to load the data set `Alelager`.
+
+If you have the `resampledata` package installed use:
+
+```{r}
+library(resampledata)
+BeerData<-Alelager
+head(BeerData)
+```
+
+**or**, you can use:
+
+```{r}
+#BeerData<-read.csv("https://sites.google.com/site/chiharahesterberg/data2/Alelager.csv")
+head(BeerData)
+```
+
+1. Create side-by-side box plots of the alcohol content, grouped by beer type. Comment on the information the box plots convey.
+
+```{r}
+
+```
+
+Commentary: 
+
+
+2. Create a histogram of the calorie content of all beers in the data set. Describe the distribution.
+```{r}
+
+```
+
+Description of distribution:
+
+3.  Sampling Distribution
+*	Simulate the sampling distribution of the mean of the number of calories, for samples of size 3.
+		
+```{r}
+
+```
+
+
+
+*	Create a histogram and describe the simulated sampling distribution.
+		
+```{r}
+
+```
+
+
+Description of sampling distribution:		
+		
+*	Use the simulation to find the probability that the average calorie content of 3 beers is less than 150 calories.
+		
+```{r}
+```
+		
+* Use the simulation to find the probability that the average calorie content of 3 beers is more than 160 calories.
+  
+```{r}
+```
+  
+  
+4. The following code generates two ecdfs, one for calories of ales, one for calories of lagers. 
+ 
+```{r}
+Ales <- subset(BeerData, select=Calories, subset=Type=="Ale", drop=T)
+Lagers <- subset(BeerData, select=Calories, subset=Type=="Lager", drop=T)
+#plot.new()
+plot.ecdf(Ales, col="red")
+plot.ecdf(Lagers, col="blue", add=TRUE)
+abline(v=165)
+```
+
+What percentage of ales in the data set have less than 165 calories? 
+
+What percentage of lagers in the data set have less than 165 calories?
+
+
+# Permutation test
+
+Conduct a permutation test to determine whether there is a difference in the mean calorie content between ales and lagers. Your test should start with a statement of the formal hypotheses and finish with a conclusion.
+
+Put each step in its own chunk and **clearly explain what each chunk is doing and what information the output provides.**
+
+```{r}
+
+```
+
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+(I put in several r-chunks.  You might use more, you might use fewer.)
+
+
+# Critical reading
+
+Below, I conduct a permutation test to test whether there was, on average, a difference in the annual snow fall in Colorado in the years 2019 and 2020.  Identify the mistake and fix it.
+
+First, we load and briefly inspect the data:
+```{r}
+SnowData <- read.csv("https://www.dropbox.com/s/h8lkjdqoqui3bzw/TestDownload2.csv?dl=1")
+head(SnowData)
+```
+
+The data shows annual snow fall recorded at 51 NOAA weather station in Colorado in 2019, and 2020. 
+
+
+The formal statements of the hypotheses are:
+
+$$H_0: \mu_{d_{2020}-d_{2019}}=0$$
+
+$$H_A: \mu_{d_{2020}-d_{2019}}\neq 0$$
+
+where $d_{2020}-d_{2019}$ represents the difference in snow fall by station. 
+
+We'll compute the difference in snowfall at each station and compute the observed mean of differences:
+
+```{r}
+DiffAtStations<-SnowData$Snow2020-SnowData$Snow2019
+Observed<-mean(DiffAtStations)
+Observed
+```
+
+Next, we'll pool the data in order to find a permutation distribution:
+
+```{r}
+PooledData<- c(SnowData$Snow2020, SnowData$Snow2019)
+```
+
+Here is the loop that generates a permutation distribution:
+
+
+```{r}
+N=10^4
+SampleDist<-numeric(N)
+for (i in 1:N)
+{index<-sample(102,51, replace=F)
+SampleDist[i]<- mean(PooledData[index]-PooledData[-index])}
+```
+
+
+
+Finally, we compute the $p$-value for our observed statistic:
+
+```{r}
+2*min((sum(SampleDist >= Observed)+1)/(N+1),
+(sum(SampleDist <= Observed)+1)/(N+1))
+```
+
+Since the $p$-value is small we reject the null hypothesis and conclude that the mean difference in snow depth between 2019 and 2020 was different.
+
+
+
+**Your notes are below.  Do NOT delete the following chunk or your file may not knit.
+```{r}
+knitr::knit_exit()
+```
+
+
+Terms help:
+population = ALL THE DATA <- parameters are the numeric characteristics of these
+sample = SOME of a population <- statistic is the term used instead of parameter
+factor variable = variable with binary data: T/F, Yes/No
+
+X in the dice example is a *discrete* random variable. $p(x)=P(X=x)$ is called the *probability mass function* (pmf)
+
+when possible outcomes are: $2 \leq Y \leq \infty$ (the ski example), Y is a *continuous* random variable. For any continuous random variable, $P(Y=y)=0$, always. The function $f$ such that $P(a \leq Y \leq b)=\int_a^b f(x) \ dx$ is called the *probability distribution function* (pdf)
+
+
+Loading in data:
+
+```{r}
+variable <- read.csv("https://sites.google.com/site/chiharahesterberg/data2/Girls2004.csv")
+```
+
+quick data information:
+
+```{r}
+names(variable) # gives the column info in the first observation aka the data's variables
+dim(variable)   # gives num. observations (rows) and num columns (variables)
+head(variable)  # gives first couple observations
+tapply(variable1, variable2, summary) # min, 1st qu., median, mean, 3rd Qu., Max
+```
+
+subsets:
+This one will take the weight variable information for all observations that have "WY" in the "State" variable. drop=T drops all the other observations.
+
+```{r}
+variableToo <- subset(variable, select=Weight, subset=State=="WY", drop=T)
+```
+
+barchart:
+the table() HAS to be in there
+
+```{r}
+barplot(table(variable$Gestation))
+```
+
+Contingency Tables:
+
+```{r}
+prop.table(table(variable, variableToo),1) # 1 or 2, for row/column percentage stuff
+```
+
+Mean:
+
+```{r}
+mean(variable, trim=.25) # trim removes 25% of data from top and bottom
+```
+
+boxplot:
+
+```{r}
+boxplot(FlightData$Delay~FlightData$Carrier)
+```
+
+Normal Quantile Plot:
+
+```{r}
+qqnorm(variable)
+qqline(variable)    # if data follows the like then data follows an approximate normal distribution.
+```
+
+ecdf **empircal cummulative distribution function** plot:
+
+```{r}
+plot.new()
+plot.ecdf(smoker, col="red")
+plot.ecdf(nonsmoker, col="blue", add=TRUE)
+abline(v=3000)
+```
+* In cdfs the probability is on the vertical axes.  
+* In pdfs the probability is an area under the curve.
+
+Skewedness:
+* a positive number means skewed right
+* a negative number means skewed left
+* the farther the number is from zero, the more skewed it is
+
+Kurtosis:
+the farther the Kurtosis is from 0, the more "un" normal the distribution
+
+```{r}
+library(moments) 
+skewness(smoker)
+skewness(nonsmoker)
+kurtosis(smoker)
+kurtosis(nonsmoker)
+```
+
+Chapter 3..
+
+The mice example: All the times that 6 mice had ran the maze were put into a vector. A *random* drug group was picked using "combn(miceTimeVector, 3)" to get all the possible 3- combinations of the 6 mice times. Then the control group is made from the *remaining* times. So like when the 3 are chosen for the 1st group then the last 3 remaining times are tossed into the control group. So each column will correspond to one full experiment. The mean of the *actual* experiment is stored for later. Then the means of each corresponding 'experiment' are calculated and compared and stored in its own vector. All the means of *every possible experiment* are compared to the actual mean from the actual experiment. So the probability that chance would give a difference *at least as large* as our observed experiment is sampleMean>actualMean/sampleMean<actualMean" here was 3/20 = 0.15 = P value. To conclude that the drug DID have an effect on times we'd want this outcome to be much much smaller. So this is not large enough to be significant. Significance is around 0.01 - 0.05.
+
+The above is a one-sided test because the drug group was hypothesized to be faster. The two-sided tests are when "the difference between a and b is not zero" so there's just a difference. No "is less than" or "is more than". For two-sided you multiply the lowest p value by 2 to account for 2 sides.
+
+When data is huge and *all possible combinations* is ginormous we take resample instead. 
+            For this example we're comparing the delay times of AA and UA. 4029 is total number of data observations
+            
+* We'll choose a sample of 1123 delay times... minimum data set for this example.
+* Compare the mean of those delay times to the mean of the remaining delay times.
+* And repeat this process MANY, MANY times.
+* `N` is the number of times we'll resample
+* `result` is a vector for storing the results of each resample
+* the loop is each iteration of the resample
+
+```{r}
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(4029,size=1123, replace=F)     # sample(x, size, replace=T/F) takes a sample of size 1123 from 0:4029
+result[i] <- mean(alldelays[index])-mean(alldelays[-index])    # index is position in alldelays vector, so "random" samples are from the above random # generator.
+}
+```
+
+Remember the question is: What is the probability of obtaining a difference in mean delay time as extreme or more extreme than the observed difference. From the histogram above we see the answer is "pretty small".  How small?:
+
+The following computes the area in BOTH tails:
+
+```{r}
+#B4:
+observed <- mean(UAdelays)-mean(AAdelays)   # so this is the *actual* experiment value
+hist(result)                                # This was to look at the results, it showed that nice camel hump
+abline(v=observed, col="blue")              # the observed value was waaay to the right of the camel hump
+
+#After:
+sum(result>=observed)
+sum(result<=observed)
+
+#Then this one gives you the P value:
+2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+
+```
+
+Matching pairs, or variables that need to stay together because it makes a difference (ex. calories from chocolate and vanilla ice cream, or pices at different places of the same brands) are resampled using the *mean of differences* instead of the *difference of means* like the example above.
+
+```{r}
+DiffInPairs <- IceCream$VanillaCalories-IceCream$ChocolateCalories
+observed <- mean(DiffInPairs)
+poolsize <- length(IceCream$Brand)
+
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{Sign <- sample(c(-1,1), poolsize, replace=T) #random swapping assignment
+  Diff <- Sign*DiffInPairs #compute differences within matched pairs
+result[i] <- mean(Diff) #assign the mean of the differences to the result vector
+}
+# P Value, a small p value means the chances of MY experiment happening were very small. So likely MY experiment didn't happen by chance.
+min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+```
+
+Chapter 4, 
+
+Sampling Distribution:
+literally just taking samples and looking at it in a graph. Here is the "sampling distribution of the mean of a sample size 6". Sampled data has "standard error" instead of standard deviation, but same math to get it (sd(data)).
+
+```{r}
+N=10^4
+Xbar <- numeric(N)
+for (i in 1:N)
+  {mysample <- sample(ChiMarathonMen$FinishMin, size=6,replace=F)
+  Xbar[i] <- mean(mysample)}
+```
+
+binomial distributions: only two options for variable to make
+
+given (usually) the probability of a "success" or postest. Negative test rate would be 1-postest. that (top bottom) number thing is: choose(15,2), which is "how many possible combinations of 2 (1&2, 3&5, 2&3, etc..) can there be when the data size is 15". it's 105 combinations
+The probability of *exactly* 2 out of 15 people testing positive = 
+
+```{r}
+choose(15, 2)*(postest)^2*(negtest)^13
+```
+
+plotting the distributiion:
+
+```{r}
+plot(dbinom(0:15, 15, postest), type='h')
+barplot(dbinom(0:15, 15, postest), names.arg=0:15)   # prof said this one is better
+```
+
+There are 4 basic R-functions associated with a distribution. 
+
+* d-*dist* we saw above when we plotted the distribution.  It is the *pdf*
+  d$dist$: $\text{d}dist(x)=P(X=x)$  For discrete random variables this is the pmf, for continuous the pdf.  This is the one you use to *plot* the distribution.
+  
+* p-*dist* which computes the area in the lower tail, i.e. $P(X \leq x)$. It is the *cdf*. Be *very* careful - the $\leq$ makes a difference!
+  p$dist$: $\text{p}dist(q)=P(X \leq q)$.  This calculates the area in the lower tail below the value $X=q$.  Think about areas under the curve ploted by d$dist$ and you can find other probabilities, like $P(X > q)$, $P(q_1 \leq X \leq q_2)$, etc. 
+  
+* q-*dist* which computes the value $q$ such that $P(X \leq q)= \text{ the prob. you send}$
+  q$dist$: $\text{q}dist(p)$ is the value of $q$ such that $P(X \leq q)=p$.  This is the inverse of p$dist$.
+
+* r-*dist* which generates a random sample from the given distribution.  This is useful for running simulations.
+  r$dist$: $\text{r}dist(n)$ generates a random sample from the indicated distribution.  Say I want to know what the sampling distribution from an exponentially distributed population is. (it isn't exponential) I can use r$dist$ to simulate this sampling distribution.
+
+
+```{r}
+P <- mean(sumMax<20)    # estimate the probability that the sum of the maxes is less than 20
+```
+
+The *geometric* distribution is for a discrete random variable.
+  * certain amount of failures THEN a success
+  * "dgeom(3, successProbability)
+
+  * To compute $P(B<5)$ we'll use `pgeom`.  We want 0, 1, 2, or 3 *failures* before a success. "probability that it takes 5 or more?" pgeom(3, successProbability)
+  ^^ Don't forget to subtract from 1 to get the upper tail.  The following is $$P(B \geq 5)=1-P(B < 5)$$. "1-pgeom(3,successProbability)
+  
+  * when plotting use d-dist.
+```{r}
+barplot(dgeom(0:20, successProbability),names.arg=0:20)
+```
+
+
+
+
+
+
+
+
+
+
+*And because Permutation Tests scare me*
+
+Is the mean delay time between UA and AA statistically signficant?
+
+It's important to know how this process is set up:
+
+The *null hypothesis* is $$H_0: \mu_{UA}-\mu_{AA}=0.$$
+
+The *hypothesis test* looks for evidence to reject the null hypthesis in favor of the *alternative hypothesis*:
+
+$$H_A: \mu_{UA}-\mu_{AA}\neq 0.$$  
+
+This is a *two-sided* test as opposed to the mice example which was a *one sided* test.  We'll multiply the probabiliy we obtain in the end by 2.
+
+If, after our resampling process, the probability of obtaining an outcome as extreme or more extreme than the observed outcome is *small* then we have evidence in favor of the alternative hypothesis.
+
+If the probability is NOT small this **DOES NOT** mean that the null hypothesis is true.  It means there is not statistical evidence to support rejecting the null hypothesis.
+
+First, we'll compute the mean difference between the delays times for the observed data.
+
+```{r}
+#delays <- read.csv("Data/FlightDelays.csv")
+#delays
+
+delays <- FlightDelays
+head(delays)
+UAdelays <- subset(delays, select=Delay, subset=Carrier=="UA", drop=T)
+head(UAdelays)
+AAdelays <- subset(delays, select=Delay, subset=Carrier=="AA", drop=T)
+#AAdelays
+observed <- mean(UAdelays)-mean(AAdelays)
+observed
+```
+
+It's hard to tell much from the box plots. From above we see that UA has a longer average delays time.  Below we see that AA has some outlier delay times.
+
+```{r}
+boxplot(delays$Delay~delays$Carrier, drop=T)
+```
+
+Next, we'll look to see how many observations there are.  This will give us the size of the pooled data.  Just like with the mice, we'll put all the delay times in a single pool.
+
+```{r}
+length(UAdelays)
+length(AAdelays)
+length(UAdelays)+length(AAdelays)
+```
+
+The following command randomly chooses 1123 data *locations* from the pooled data.  This list of *addresses* will tell us where to look for a *resample*.  
+```{r}
+index <- sample(4029,size=1123, replace=F)
+#index
+```
+
+Here is the pooled set of ALL delay times:
+```{r}
+alldelays <- delays$Delay
+#alldelays[index]
+```
+
+For the mice example we looked at *all* the possibilities.  For this data set there are this many possiblities!
+
+```{r}
+choose(4029, 1123)
+```
+
+No, not really infinite, but effectively infinite for R or my computer.
+
+So computing ALL the posibilities is not practical.
+
+Now, we're going to **resample** instead:
+
+* We'll choose a sample of 1123 delay times. 
+* Compare the mean of those delay times to the mean of the remaining delay times. * And repeat this process MANY, MANY times.
+
+* `N` is the number of times we'll resample
+* `result` is a vector for storing the results of each resample
+* the loop is each iteration of the resample
+
+
+
+```{r}
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(4029,size=1123, replace=F)
+result[i] <- mean(alldelays[index])-mean(alldelays[-index])
+} 
+
+  
+```
+
+```{r}
+hist(result)
+abline(v=observed, col="blue")
+```
+
+Remember the question is: What is the probability of obtaining a diffence in mean delay time as extreme or more extreme than the observed difference. From the histogram above we see the answer is "pretty small".  How small?:
+
+The following computes the area in BOTH tails:
+
+
+```{r}
+sum(result>=observed)
+sum(result<=observed)
+```
+
+```{r}
+2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+```
+
+This value is the probability: the **p-value**.  It is small.
+
+We have statistical evidence to reject the null hypothesis and conclude that the mean time of delays between UA and AA is different.  
+
+Notice, we do NOT conclude that the mean delay time of UA is longer than that of AA.
+
+To see what happened above we'll disect a little:
+
+```{r}
+#result >= observed
+sum(result>=observed)
+```
+
+If we obtain zero: this explains why we add 1 to the numerator and denominator.  It's just an easy way to avoid this problem.
+
+We look at the area under the curve on *both* sides of the blue line and take the smaller value. One of these areas will be large and makes no sense - but this is a convenient way to get the *right* probability.
+
+We multiply by two because we haven't built the test thinking that one airline has a longer delay time than the other.  Rather, that they are different.
+
+So, we need to mulitiply our probabily by 2 because the outcome could occur in either tail.
