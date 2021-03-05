@@ -1,0 +1,396 @@
+---
+title: "Exam_One_A"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+# Terminology
+1. What is the difference between a *population* and a *sample*?
+
+Answer: 
+
+
+2. What is the difference between a *statistic* and a *parameter*.  Give an example of a *statistic*.
+
+Answer:
+
+
+3. In a data set, what is the difference between an *observation* and a *variable*?
+
+Answer:
+
+
+
+# Exploratory Data Analysis
+
+Use one of the following two chunks to load the data set `Alelager`.
+
+If you have the `resampledata` package installed use:
+
+```{r}
+library(resampledata)
+BeerData<-Alelager
+head(BeerData)
+```
+
+**or**, you can use:
+
+```{r}
+BeerData<-read.csv("https://sites.google.com/site/chiharahesterberg/data2/Alelager.csv")
+head(BeerData)
+```
+
+1. Create side-by-side box plots of the alcohol content, grouped by beer type. Comment on the information the box plots convey.
+
+```{r}
+
+```
+
+Commentary: 
+
+
+2. Create a histogram of the calorie content of all beers in the data set. Describe the distribution.
+```{r}
+
+```
+
+Description of distribution:
+
+3.  Sampling Distribution
+*	Simulate the sampling distribution of the mean of the number of calories, for samples of size 3.
+		
+```{r}
+
+```
+
+
+
+*	Create a histogram and describe the simulated sampling distribution.
+		
+```{r}
+
+```
+
+
+Description of sampling distribution:		
+		
+*	Use the simulation to find the probability that the average calorie content of 3 beers is less than 150 calories.
+		
+```{r}
+```
+		
+* Use the simulation to find the probability that the average calorie content of 3 beers is more than 160 calories.
+  
+```{r}
+```
+  
+  
+4. The following code generates two ecdfs, one for calories of ales, one for calories of lagers. 
+ 
+```{r}
+Ales <- subset(BeerData, select=Calories, subset=Type=="Ale", drop=T)
+Lagers <- subset(BeerData, select=Calories, subset=Type=="Lager", drop=T)
+#plot.new()
+plot.ecdf(Ales, col="red")
+plot.ecdf(Lagers, col="blue", add=TRUE)
+abline(v=165)
+```
+
+What percentage of ales in the data set have less than 165 calories? 
+
+What percentage of lagers in the data set have less than 165 calories?
+
+
+# Permutation test
+
+Conduct a permutation test to determine whether there is a difference in the mean calorie content between ales and lagers. Your test should start with a statement of the formal hypotheses and finish with a conclusion.
+
+Put each step in its own chunk and **clearly explain what each chunk is doing and what information the output provides.**
+
+```{r}
+
+```
+
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+(I put in several r-chunks.  You might use more, you might use fewer.)
+
+
+# Critical reading
+
+Below, I conduct a permutation test to test whether there was, on average, a difference in the annual snow fall in Colorado in the years 2019 and 2020.  Identify the mistake and fix it.
+
+First, we load and briefly inspect the data:
+```{r}
+SnowData <- read.csv("https://www.dropbox.com/s/h8lkjdqoqui3bzw/TestDownload2.csv?dl=1")
+head(SnowData)
+```
+
+The data shows annual snow fall recorded at 51 NOAA weather station in Colorado in 2019, and 2020. 
+
+
+The formal statements of the hypotheses are:
+
+$$H_0: \mu_{d_{2020}-d_{2019}}=0$$
+
+$$H_A: \mu_{d_{2020}-d_{2019}}\neq 0$$
+
+where $d_{2020}-d_{2019}$ represents the difference in snow fall by station. 
+
+We'll compute the difference in snowfall at each station and compute the observed mean of differences:
+
+```{r}
+DiffAtStations<-SnowData$Snow2020-SnowData$Snow2019
+Observed<-mean(DiffAtStations)
+Observed
+```
+
+Next, we'll pool the data in order to find a permutation distribution:
+
+```{r}
+PooledData<- c(SnowData$Snow2020, SnowData$Snow2019)
+```
+
+Here is the loop that generates a permutation distribution:
+
+
+```{r}
+N=10^4
+SampleDist<-numeric(N)
+for (i in 1:N)
+{index<-sample(102,51, replace=F)
+SampleDist[i]<- mean(PooledData[index]-PooledData[-index])}
+```
+
+
+
+Finally, we compute the $p$-value for our observed statistic:
+
+```{r}
+2*min((sum(SampleDist >= Observed)+1)/(N+1),
+(sum(SampleDist <= Observed)+1)/(N+1))
+```
+
+Since the $p$-value is small we reject the null hypothesis and conclude that the mean difference in snow depth between 2019 and 2020 was different.
+
+
+**Your notes are below.  Do NOT delete the following chunk or your file may not knit.
+```{r}
+knitr::knit_exit()
+```
+
+
+
+## Terminology
+% observation - a value of something of interest youâ€™re measuring or counting during a study or experiment
+
+% variable -  any characteristics, number, or quantity that can be measured or counted
+
+% population - the entire pool from which a statistical sample is drawn 
+
+% random sample - a subset of a statistical population in which each member of the subset has an equal probability of being chosen.
+
+% numerical variable - a data variable that takes on any value within a finite or    infinite interval
+
+% factor variable - (also called an independent variable) is an explanatory variable manipulated by the experimenter.
+
+% random variable - a variable whose value is unknown or a function that assigns values to each of an experiment's outcomes.Denoted by a         capital letter.
+                o Discrete Random Variable - countable in a                                finite amount of time
+                o Continuous Random Variable - literally take                               forever to count
+                
+
+% independent and identically distributed - Identically Distributed means that there are no overall trendsâ€“the distribution doesn't             fluctuate and all items in the sample  are taken from the same probability distribution. Independent means that the sample              items are all independent events. In other words, they aren't connected to each other  in any way.
+
+% sampling with replacement - a sampling unit is drawn from a finite population and is returned to that population, after its                  characteristic(s) have been recorded, before  the next unit is drawn
+
+% sampling without replacement - opposite of replacement
+       parameter - any measured quantity of a statistical population that summarises or    describes an aspect of the population, such         as a mean or a standard deviation.
+
+% statistic - any quantity computed from values in a sample that is used for a       statistical purpose
+
+% statistical inference - the process through which inferences about a population are made based on certain statistics calculated from a       sample of data drawn from that population.
+
+% observational study - attempt to understand cause-and-effect relationships without the ability to control (1) how subjects are              assigned to groups and/or (2) which         treatments each group receives.
+
+% experimental study / experiment - a controlled study in which the researcher attempts  to understand cause-and-effect relationships.        The study is "controlled" in the sense that the researcher controls (1) how subjects are assigned to groups and (2) which               treatments each group receives.
+
+% probability - # of favorable outcomes/ total # of outcomes
+
+% normal distribution- ..:|:..
+
+## R code
+Data <-  read.csv("https://sites.google.com/site/chiharahesterberg/data2/Data.csv")
+Data <-  read.csv("/data/Data.csv")
+
+mean - mean()
+
+standard diviation - sd()
+
+max - max()
+
+min - min()
+
+quantiles - quantile()
+
+histogram - hist() ---- hist(Data$Subdata)
+
+summary - summary()
+
+headings - head()
+
+QQ plot - quantile-quantil plot: graphical tool to help us assess if a set of data plausibly came from some theoretical distribution such as a Normal or Exponential.
+qqplot()/qqnorm()/qqline()
+
+Box plot - boxplot(Data$subdata1~Data$subdata2)
+
+barplot - barplot()
+
+Scatter plot - plot()
+
+Scatter ex: plot(Spruce$Ht.change, Spruce$Di.change, main="Height Change vs. Diameter Change",xlab="Height Change ", ylab="Diameter 
+Change ", pch=19)
+
+variance - var(data,y=NULL,na.rm=FALSE)
+
+
+## Permutation - 
+
+Two-sample Permutation Test:
+
+data <- alldata$subset
+poolsize<- length(data)
+poolsize
+GroupOneSize <- length(data1)
+GroupOneSize
+GroupTwoSize <- length(data2)
+GroupTwoSize
+
+
+--------------------------------------------------------
+ N<- 10^4-1
+ result <- numeric(N)
+ for (i in 1:N)
+ {
+   index <- sample(poolsize,size=GroupOneSize, replace = F)
+result[i]<- (sum(data[index]>#)/GroupOneSize) - (sum(delays[-index]>#)/GroupTwoSize)
+ }
+--------------------------------------------------------
+
+pvalue:
+
+2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+--------------------------------------------------------
+N <- 10^4-1
+result <-numeric(N)
+for(i in 1:N)
+    {Sign <- sample(c(-1,1),poolsize,replace=T) #random swapping assignment
+      Diff<- Sign*DiffInPairs #compute differences within matched pairs
+      result[i]<- mean(Diff) #assign the mean of the differences to the result vector
+}
+
+pvalue<-2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+
+--------------------------------------------------------
+
+data<-DiffInPairs[DiffInPairs>-#] #inouts greater than # from data set
+
+--------------------------------------------------------
+
+# Plotting Multiple Data on One Figure
+
+m=mean(Spruce$Height5)
+s=sd(Spruce$Height5)
+ggplot(data.frame(Spruce$Height5), aes(x = Spruce$Height5)) +
+  geom_histogram(bins=10, aes(y=..density..))+
+  stat_function(fun = dnorm,  args=list(mean=m, sd=s), color = "green")
+-------------------------------------------------------
+# qq plot
+
+plot.new()
+qqnorm(Spruce$Height5)
+qqline(Spruce$Height5)
+
+--------------------------------------------------------
+
+probHSD<-pbinom(230,800,HSD)-pbinom(219,800,HSD)
+ans<- 'The probability that between 220 and 230 people of an 800 person sample have a highschool diploma is'
+cat(ans,probHSD)
+
+--------------------------------------------------------
+
+dbinom - A probability mass function of binomial                    distribution: Pr(X=x) (probability of observing             value equal to x)
+pbinom - A cumulative distribution function of this                 distribution: Pr(Xâ‰¤x) (probability of observing             value smaller or equal then x)
+
+% Notice that cumulative distribution function has nothing          to do with data being continuous, or discrete, there         are cumulative distribution functions for both kind         of variables (and for mixed types).
+
+% dnorm - A probability density function so the area under          the curve (from âˆ’âˆž to âˆž) is 1 and the tails fall            towards 0. A normal density can be sometimes be             above 1 when the variance is below 12Ï€
+% dbinom - A probability mass function taking positive              values only at discrete points and the sum of the           probabilities is 1. So none of the individual               probabilities can exceed 1
+% pnorm - A cumulative distribution function going from 0 on         the left to 1 on the right. A normal distribution is         continuous and so is its cumulative distribution            function
+
+% pbinom - A cumulative distribution function going from 0          on the left to 1 on the right. A binomial                   distribution is discrete, so its cumulative                 distribution function jumps up in steps at the              discrete values
+
+Really short answer:
+
+use 'dbinom' if you want to know the probability of exactly k successes in N trials.
+
+two heads in 3 coinflips.
+
+use 'pbinom' if you want to know the probability of at least k successes in N trials. at least two heads in 3 coinflips.
+
+--------------------------------------------------------
+# Dice probability / chance of success after failures
+- rStudio requires that the number of trials of failure are 1 less than the amount of tries til success
+
+- Twelve fair dice are tossed and at least two 6â€™s appear.
+
+
+P12 <- 1-(5/6)^12 -((1/6)^1)*((5/6)^11)*choose(12,1)
+
+plot(dbinom(0:12,12,P12),type='b')
+
+---------------------------------------------------------
+So in this case the drug group took longer (on average) to complete the maze than the control group.
+
+We want to compare the mean time of the drug group to the mean time of the control group for all the possibilities:
+
+
+colMeans(druggroup)-colMeans(controlgroup)
+---------------------------------------------------------
+
+
+
+
+
+

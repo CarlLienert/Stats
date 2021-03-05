@@ -1,0 +1,554 @@
+---
+title: "Exam_One_A"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+# Terminology
+1. What is the difference between a *population* and a *sample*?
+
+Answer: 
+
+
+2. What is the difference between a *statistic* and a *parameter*.  Give an example of a *statistic*.
+
+Answer:
+
+
+3. In a data set, what is the difference between an *observation* and a *variable*?
+
+Answer:
+
+
+
+# Exploratory Data Analysis
+
+Use one of the following two chunks to load the data set `Alelager`.
+
+If you have the `resampledata` package installed use:
+
+```{r}
+library(resampledata)
+BeerData<-Alelager
+head(BeerData)
+```
+
+**or**, you can use:
+
+```{r}
+BeerData<-read.csv("https://sites.google.com/site/chiharahesterberg/data2/Alelager.csv")
+head(BeerData)
+```
+
+1. Create side-by-side box plots of the alcohol content, grouped by beer type. Comment on the information the box plots convey.
+
+```{r}
+
+```
+
+Commentary: 
+
+
+2. Create a histogram of the calorie content of all beers in the data set. Describe the distribution.
+```{r}
+
+```
+
+Description of distribution:
+
+3.  Sampling Distribution
+*	Simulate the sampling distribution of the mean of the number of calories, for samples of size 3.
+		
+```{r}
+
+```
+
+
+
+*	Create a histogram and describe the simulated sampling distribution.
+		
+```{r}
+
+```
+
+
+Description of sampling distribution:		
+		
+*	Use the simulation to find the probability that the average calorie content of 3 beers is less than 150 calories.
+		
+```{r}
+```
+		
+* Use the simulation to find the probability that the average calorie content of 3 beers is more than 160 calories.
+  
+```{r}
+```
+  
+  
+4. The following code generates two ecdfs, one for calories of ales, one for calories of lagers. 
+ 
+```{r}
+Ales <- subset(BeerData, select=Calories, subset=Type=="Ale", drop=T)
+Lagers <- subset(BeerData, select=Calories, subset=Type=="Lager", drop=T)
+#plot.new()
+plot.ecdf(Ales, col="red")
+plot.ecdf(Lagers, col="blue", add=TRUE)
+abline(v=165)
+```
+
+What percentage of ales in the data set have less than 165 calories? 
+
+What percentage of lagers in the data set have less than 165 calories?
+
+
+# Permutation test
+
+Conduct a permutation test to determine whether there is a difference in the mean calorie content between ales and lagers. Your test should start with a statement of the formal hypotheses and finish with a conclusion.
+
+Put each step in its own chunk and **clearly explain what each chunk is doing and what information the output provides.**
+
+```{r}
+
+```
+
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+(I put in several r-chunks.  You might use more, you might use fewer.)
+
+
+# Critical reading
+
+Below, I conduct a permutation test to test whether there was, on average, a difference in the annual snow fall in Colorado in the years 2019 and 2020.  Identify the mistake and fix it.
+
+First, we load and briefly inspect the data:
+```{r}
+SnowData <- read.csv("https://www.dropbox.com/s/h8lkjdqoqui3bzw/TestDownload2.csv?dl=1")
+head(SnowData)
+```
+
+The data shows annual snow fall recorded at 51 NOAA weather station in Colorado in 2019, and 2020. 
+
+
+The formal statements of the hypotheses are:
+
+$$H_0: \mu_{d_{2020}-d_{2019}}=0$$
+
+$$H_A: \mu_{d_{2020}-d_{2019}}\neq 0$$
+
+where $d_{2020}-d_{2019}$ represents the difference in snow fall by station. 
+
+We'll compute the difference in snowfall at each station and compute the observed mean of differences:
+
+```{r}
+DiffAtStations<-SnowData$Snow2020-SnowData$Snow2019
+Observed<-mean(DiffAtStations)
+Observed
+```
+
+Next, we'll pool the data in order to find a permutation distribution:
+
+```{r}
+PooledData<- c(SnowData$Snow2020, SnowData$Snow2019)
+```
+
+Here is the loop that generates a permutation distribution:
+
+
+```{r}
+N=10^4
+SampleDist<-numeric(N)
+for (i in 1:N)
+{index<-sample(102,51, replace=F)
+SampleDist[i]<- mean(PooledData[index]-PooledData[-index])}
+```
+
+
+
+Finally, we compute the $p$-value for our observed statistic:
+
+```{r}
+2*min((sum(SampleDist >= Observed)+1)/(N+1),
+(sum(SampleDist <= Observed)+1)/(N+1))
+```
+
+Since the $p$-value is small we reject the null hypothesis and conclude that the mean difference in snow depth between 2019 and 2020 was different.
+
+
+**Your notes are below.  Do NOT delete the following chunk or your file may not knit.
+```{r}
+knitr::knit_exit()
+```
+
+
+Chapter 1
+
+Observation: Each row of the data set. A value of something of interest you're measuring or counting during a study or experiment: a person's height, a blank account value at a certain point in time, or number of animals.
+
+Variable: Each column. An attribute that describes a person, place, thing, or idea: a person's hair color is a potential variable, which could have the calue of "blond" for one person and "brunette" for another.
+
+Population/sample: Represents all the individual cases, whether they are babies, fish, cars, or coin flips.
+
+Random Sample: a sample of independent and identically distributed (i.i.d.) observations from the population, if the population is infinite.
+
+Numeric Variable: A variable where the measurement or number has a numerical meaning: total rainfall measured in inches, heart rate, number of cheeseburgers consumed in an hour.
+
+Factor Variable: The variables that experimenters control during an experiment in order to determine their effect on the response variable.
+
+Random Variable: A variable whose value is unkown or a function that assigns values to each of an experiment's outcomes.
+
+Independent and Identically distributed:If each random variable has the same probability distribution as the others and all are mutually independent.
+
+Parameter: A (numerical) characteristic of a population of of a probability distribution
+
+Statistic: A (numerical) characteristic of data.
+
+Statistical Inference: Drawing a conclusion about a population based on information about a sample.
+
+Census: Take a poll of every individual in the population.
+
+Sampling Frame: A list from which the researchers will choose their sample.
+
+Under coverage: Omitting people from the target population in the survey.
+
+Probability (scientific) Sampling Scheme: A scheme that gives everybody in the population a positive chance of being selected.
+
+Stratified Sampling: The population is divided into non overlapping strata, and then random samples are drawn from each stratum.
+
+Cluster Sampling: The population is divided into non overlapping clusters, and then a random sample of clusters is drawn.
+
+Observational Study: A study in which researchers observe participants but do not influence the outcome. No cause and effect relationship. Researchers CANNOT conclude anything from this study because it was only observational.
+
+Experiment: Researchers will manipulate the environment in some way to observe the response of the objects of interest (people, mice, ball bearings, etc.).
+
+Subjects: When the objects of interest in an experiment are people.
+
+Experimental Units: When the objects of interest in an experiment are not people.
+
+Experimental Studies: Are ones where researchers introduce an intervention and study the effects.
+
+Random Assignment: To spread out the effects of unknown or uncontrollable factors that might introduce unwanted variability into the results.
+
+Double-blind Experiment: One in which neither the researcher nor the subject knows who is receiving which treatment.
+
+Single-blinded Experiment: Just the researcher or the subject (but not both) know who is receiving which treatment.
+
+Bias: The systematic favoring of one outcome over another.
+
+Sampling with replacement: A sampling unit is drawn from a finite population and is returned to that population, after its characteristic(s) have been recorded.
+
+
+---------------------------------------------------
+Factors: how many columns there are (along the top)
+Numeric: which ones have number values
+Factor: which ones have words for the inputs
+Number of observations: how many entries there are
+
+Import File:
+   Name it (Girls) whatever you want.
+   Change the end: Girls2004 to the data set you want
+```{r}
+Girls <- read.csv("https://sites.google.com/site/chiharahesterberg/data2/Girls2004.csv")
+Girls2 <- read.csv("Data/Girls2004.csv")
+```
+
+To see data:
+```{r}
+#head(Girls)
+```
+
+-----------------------------------------------------
+Suppose we want to look at the birth weight of girls born in Wyoming.  We can extract this information from the data set with the "subset" command:
+
+```{r}
+WYGirls <- subset(Girls, select=Weight, subset=State=="WY", drop=T)
+WYGirls
+```
+--------------------------------------------------------
+Want to take the mean:
+  The second will trim the numbers 25% on each side
+```{r}
+mean(WYGirls)
+mean(WYGirls, trim=.25)
+```
+
+
+Chapter 2
+
+Barplot and Table:
+
+```{r}
+FlightData <-  read.csv("https://sites.google.com/site/chiharahesterberg/data2/FlightDelays.csv")
+```
+
+```{r}
+barplot(table(FlightData$Carrier))
+table(FlightData$Carrier)
+```
+--------------------------------------------------
+Contingency tables:
+** In this case we want the second proptable
+  From the table, add AA yess and nos and divide no by the sum of them.
+  
+```{r}
+table(FlightData$Carrier, FlightData$Delayed30)
+prop.table(table(FlightData$Carrier, FlightData$Delayed30))
+prop.table(table(FlightData$Carrier, FlightData$Delayed30),1)
+prop.table(table(FlightData$Carrier, FlightData$Delayed30),2)
+```
+----------------------------------------------------------------------
+Histogram:
+  This histogram is skewed right
+```{r}
+hist(FlightData$Delay)
+```
+
+THis is only for UA flight delays:
+```{r}
+UAOnly <- subset(FlightData, subset=Carrier=="UA")
+dim(UAOnly)
+hist(UAOnly$Delay)
+```
+
+To cut the sides down on a histogram:
+```{r}
+width=seq(-50,700, by=25)
+hist(UAOnly$Delay, width)
+```
+----------------------------------------------------------------------------
+Take the median, min, max, and range
+```{r}
+median(UAOnly$Delay)
+max(UAOnly$Delay)
+min(UAOnly$Delay)
+range(UAOnly$Delay)
+```
+Show the percentages and for the given quantiles (IQR)
+```{r}
+quantile(UAOnly$Delay)
+```
+may need to add the end
+  quantile(Recidivism$Days,na.rm = TRUE)
+
+Standard deviation:
+```{r}
+sd(UAOnly$Delay)
+```
+
+---------------------------------------------------------------------------
+To find the numeric summaries of delay and carrier
+```{r}
+tapply(FlightData$Delay, FlightData$Carrier, summary)
+tapply(FlightData$Delay, FlightData$Carrier, mean)
+tapply(FlightData$Delay, FlightData$Day, sd)
+```
+---------------------------------------------------------------------------
+Boxplot:
+
+```{r}
+boxplot(FlightData$Delay~FlightData$Destination)
+```
+
+```{r}
+remove <- subset(FlightData, subset=Delay<=100)
+boxplot(remove$Delay~remove$Destination)
+```
+-----------------------------------------------------------------------------
+Quantile-Quantile plots (qq plots):
+  This plot is skewed right
+  If the Normal Q-Q Plot line follows the dots, the plot is approximately a normal             distribution.
+```{r}
+plot.new()
+qqnorm(FlightData$Delay)
+qqline(FlightData$Delay)
+```
+-------------------------------------------------------------------------------
+Summary of data:
+```{r}
+summary(FlightData$Delay)
+```
+-------------------------------------------------------------------------------
+Scatter plot:
+```{r}
+plot(FlightData$Carrier, FlightData$Delay, main = 'Scatterplot')
+```
+-----------------------------------------------------------------------------
+ecdf: of ages over and under 25 that were in prison.
+```{r}
+Under25 <- subset(Recidivism, select=Days, subset=Age25=="Under 25", drop=T)
+head(Under25)
+Over25 <- subset(Recidivism, select=Days, subset=Age25=="Over 25", drop=T)
+head(Over25)
+```
+
+```{r}
+plot.ecdf(Under25, col="red")
+plot.ecdf(Over25, col="blue", add=TRUE)
+abline(v=400)
+```
+------------------------------------------------------------------------------
+
+Chapter 3
+
+
+Permutation Test: (1) Analyze the problem (2) Choose a test statistic (3) Resample and recompute the test statistic (4) Reject or fail to reject the null hypothesis
+---
+Difference in means:
+
+* `N` is the number of times we'll resample
+* `result` is a vector for storing the results of each resample
+* the loop is each iteration of the resample
+
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(4029,size=1123, replace=F)
+result[i] <- mean(alldelays[index])-mean(alldelays[-index])
+} 
+-----
+For delayed more than 20 min:
+
+poolsize <- length(alldelays)
+GroupOneSize <- length(Maydelays)
+GroupTwoSize <- length(Junedelays)
+
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(poolsize,size=GroupOneSize, replace=F)
+result[i] <- (sum(alldelays[index]>20)/GroupOneSize)-(sum(alldelays[-index]>20)/GroupTwoSize)
+
+hist(result)
+
+
+------------------------------------------------------------------------------------
+Chapter 4
+
+Sampling Distribution: A probability distribution of a statistic obtained from a larger number of samples drawn from a specific population. The sampling distribution of a given population is the distribution of frequencies of a range of different outcomes that could possibly occur for a statistic of a population.   
+
+
+
+ Example:
+A and B are two populations:
+```{r}
+A <- c(3, 5, 7, 9, 10, 16)
+B <- c(8, 10, 11, 15, 18, 25, 28)
+max(A)
+max(B)
+```
+
+a) Draw random samples without replacement of size 3 from each population, and simulate the sampling distribution of the sum of their max.
+
+```{r}
+N <- 10^4
+Xa <- numeric(N)
+for (i in 1:N)
+{
+  sampA <- sample(A, 3, replace = FALSE)
+  sampB <- sample(B, 3, replace = FALSE)
+  Xa[i] <- max(sampA)+max(sampB)
+}
+
+stripchart(A,method='stack',at=0)
+stripchart(B,method='stack',at=0)
+hist(Xa)
+```
+
+b) Use your simulation to estimate the probability  that maximum of the union is leass than 20.
+
+```{r}
+prob2 <- mean(Xa<20)
+length(which(Xa<20))/N
+```
+Therefore, the probability that the sum of the maximums is less than 20 is 0.0022.
+
+c)Draw random samples of size 3 from A and B, find the max of union of the two sets. Simulate the sampling distribution of that. Commpare with part a 
+
+```{r}
+N <- 10^4
+Xb <- numeric(N)
+for (i in 1:N)
+{
+  sampA <- sample(A, 3, replace = FALSE)
+  sampB <- sample(B, 3, replace = FALSE)
+  Xb[i] <- max(union(sampA,sampB))
+}
+
+hist(Xb)
+```
+
+d)Find the probability tht the max of the union is less than 20
+
+```{r}
+prob2 <- mean(Xb<20)
+length(which(Xb<20))/N
+```
+Therefore, the probability that the sum of the maximums is less than 20 is 0.2854.
+
+
+
+-----------------------------------------------------
+```{r}
+HSD <- 0.286
+```
+
+
+```{r}
+Prob <- pbinom(230,800,HSD)-pbinom(219,800,HSD)
+ans <- 'The probablility that between 220 and 230 US adults have a high school degree is'
+cat(ans,Prob)
+```
+
+```{r}
+plot(dbinom(0:800,800,HSD), type = 'b')
+```
+
+## Another Problem
+
+```{r}
+role6 <- 1-(5/6)^6
+```
+
+
+```{r}
+P <- pbinom(1:6,6,role6)
+ans <- 'The probablility that between 220 and 230 US adults have a high school degree is'
+cat(ans,P)
+```
+
+
+
+
+
+
+
+

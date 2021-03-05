@@ -1,0 +1,476 @@
+---
+title: "Exam_One_A"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+# Terminology
+1. What is the difference between a *population* and a *sample*?
+
+Answer: 
+
+
+2. What is the difference between a *statistic* and a *parameter*.  Give an example of a *statistic*.
+
+Answer:
+
+
+3. In a data set, what is the difference between an *observation* and a *variable*?
+
+Answer:
+
+
+
+# Exploratory Data Analysis
+
+Use one of the following two chunks to load the data set `Alelager`.
+
+If you have the `resampledata` package installed use:
+
+```{r}
+library(resampledata)
+BeerData<-Alelager
+head(BeerData)
+```
+
+**or**, you can use:
+
+```{r}
+BeerData<-read.csv("https://sites.google.com/site/chiharahesterberg/data2/Alelager.csv")
+head(BeerData)
+```
+
+1. Create side-by-side box plots of the alcohol content, grouped by beer type. Comment on the information the box plots convey.
+
+```{r}
+
+```
+
+Commentary: 
+
+
+2. Create a histogram of the calorie content of all beers in the data set. Describe the distribution.
+```{r}
+
+```
+
+Description of distribution:
+
+3.  Sampling Distribution
+*	Simulate the sampling distribution of the mean of the number of calories, for samples of size 3.
+		
+```{r}
+
+```
+
+
+
+*	Create a histogram and describe the simulated sampling distribution.
+		
+```{r}
+
+```
+
+
+Description of sampling distribution:		
+		
+*	Use the simulation to find the probability that the average calorie content of 3 beers is less than 150 calories.
+		
+```{r}
+```
+		
+* Use the simulation to find the probability that the average calorie content of 3 beers is more than 160 calories.
+  
+```{r}
+```
+  
+  
+4. The following code generates two ecdfs, one for calories of ales, one for calories of lagers. 
+ 
+```{r}
+Ales <- subset(BeerData, select=Calories, subset=Type=="Ale", drop=T)
+Lagers <- subset(BeerData, select=Calories, subset=Type=="Lager", drop=T)
+#plot.new()
+plot.ecdf(Ales, col="red")
+plot.ecdf(Lagers, col="blue", add=TRUE)
+abline(v=165)
+```
+
+What percentage of ales in the data set have less than 165 calories? 
+
+What percentage of lagers in the data set have less than 165 calories?
+
+
+# Permutation test
+
+Conduct a permutation test to determine whether there is a difference in the mean calorie content between ales and lagers. Your test should start with a statement of the formal hypotheses and finish with a conclusion.
+
+Put each step in its own chunk and **clearly explain what each chunk is doing and what information the output provides.**
+
+```{r}
+
+```
+
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+(I put in several r-chunks.  You might use more, you might use fewer.)
+
+
+# Critical reading
+
+Below, I conduct a permutation test to test whether there was, on average, a difference in the annual snow fall in Colorado in the years 2019 and 2020.  Identify the mistake and fix it.
+
+First, we load and briefly inspect the data:
+```{r}
+SnowData <- read.csv("https://www.dropbox.com/s/h8lkjdqoqui3bzw/TestDownload2.csv?dl=1")
+head(SnowData)
+```
+
+The data shows annual snow fall recorded at 51 NOAA weather station in Colorado in 2019, and 2020. 
+
+
+The formal statements of the hypotheses are:
+
+$$H_0: \mu_{d_{2020}-d_{2019}}=0$$
+
+$$H_A: \mu_{d_{2020}-d_{2019}}\neq 0$$
+
+where $d_{2020}-d_{2019}$ represents the difference in snow fall by station. 
+
+We'll compute the difference in snowfall at each station and compute the observed mean of differences:
+
+```{r}
+DiffAtStations<-SnowData$Snow2020-SnowData$Snow2019
+Observed<-mean(DiffAtStations)
+Observed
+```
+
+Next, we'll pool the data in order to find a permutation distribution:
+
+```{r}
+PooledData<- c(SnowData$Snow2020, SnowData$Snow2019)
+```
+
+Here is the loop that generates a permutation distribution:
+
+
+```{r}
+N=10^4
+SampleDist<-numeric(N)
+for (i in 1:N)
+{index<-sample(102,51, replace=F)
+SampleDist[i]<- mean(PooledData[index]-PooledData[-index])}
+```
+
+
+
+Finally, we compute the $p$-value for our observed statistic:
+
+```{r}
+2*min((sum(SampleDist >= Observed)+1)/(N+1),
+(sum(SampleDist <= Observed)+1)/(N+1))
+```
+
+Since the $p$-value is small we reject the null hypothesis and conclude that the mean difference in snow depth between 2019 and 2020 was different.
+
+
+
+**Your notes are below.  Do NOT delete the following chunk or your file may not knit.
+```{r}
+knitr::knit_exit()
+```
+
+
+
+# Chapter 1
+A stastic is a (numerical) characteristic of data
+A parameter is a (numerical) characteristic of a population or of a probability distribution
+An observational study is a study in which researchers observe participants but do not influence the outcome.
+-this has no cause and effect conclusions.
+An experiments is where researchers will manipulate the environment in some way to observe the response of the objects of interest
+-subjects are the objects is people
+-experimental units are the objects if anything else
+
+A double blind experiment is one in which neither the researcher nor the subjects knows who is receiving which treatment.
+A single blinded experiment is if just the researcher or the subject but not both knows who i receiving which treatment.
+Blinding is important in reducing bias, the systematic favoring of one outcome over another.
+
+# Chapter 2
+how to input data and show it
+```{r}
+FlightData <-  read.csv("https://sites.google.com/site/chiharahesterberg/data2/FlightDelays.csv")
+head(FlightData)
+```
+Creats a table and barchart of DepartTime
+```{r}
+barplot(table(FlightData$DepartTime))
+table(FlightData$DepartTime)
+```
+Create a contingency table of the variables Day and Delayed30
+```{r}
+table(FlightData$Day, FlightData$Delayed30)
+```
+create side by side boxplots of lengths of the flights grouped by whether or not the flight was delayed at least 30 min
+```{r}
+#table(FlightData$FlightLength, FlightData$Delayed30)
+boxplot(FlightData$FlightLength~FlightData$Delayed30)
+```
+create a contiengency table summarizing the relationship between recid by age25.
+```{r}
+table(Recidivism$Recid,Recidivism$Age25)
+prop.table(table(Recidivism$Recid,Recidivism$Age25))#provides the precentages of the porportion compared to all of them.
+#some comparative statements could be :The boxplot shows us that the median from both a felony and misdemeanor are close to one another. The spread of the box plots is about the same. The felony might be skewed right just a little but since the median is closer to the lower spread of the data.
+prop.table(table(FlightData$Carrier, FlightData$Delayed30),1)#provides the percentages of the porportion in the rows
+prop.table(table(FlightData$Carrier, FlightData$Delayed30),2)#provides the percentages of the porportion in the columns
+```
+Using the quantile command to obtain the quartiles of the number of days to recidivism. Since we are missing values (NA) for some we need to add in teh argument na.rm=TRUE
+```{r}
+quantile(Recidivism$Days,na.rm = TRUE)
+```
+create ecdf's days to recidivism for those under 25 years of age and those over 25.
+```{r}
+under <- subset(Recidivism, select=Days, subset=Age25=="Under 25", drop=T) #makes group under 25
+head(under)
+over <- subset(Recidivism, select=Days, subset=Age25=="Over 25", drop=T)#makes group over 25
+head(over)
+plot.ecdf(under, col="red")#plots the under group
+plot.ecdf(over, col="blue", add=TRUE)#plots the over group
+abline(v=400)# plots a line at 400 so we can evaluate
+#What can be said about this plot: The approximation of the proportion in each age group of those who relapsed that were sent back to prison 400 days after release for under 25 years old is 55% and those over 25 years old is 45%.
+```
+Using level command to determine all the values that the variable offense has for recidivism
+```{r}
+levels(Recidivism$Offense)
+```
+Make a single ecdf plot that shows the ecdf for each of the Offense values.
+```{r}
+Felony <- subset(Recidivism, select=Days, subset=Offense=="Felony", drop=T)
+head(Felony)
+Misdemeanor <- subset(Recidivism, select=Days, subset=Offense=="Misdemeanor", drop=T)
+head(Misdemeanor)
+```
+This plot is a little different than the one you obtained for under 25 vs over 25.  Your plot should show the two curves intersecting.  Interpret the ecdf plot paying particular attention to this intersection.
+```{r}
+plot.ecdf(Felony, col="red")
+plot.ecdf(Misdemeanor, col="blue", add=TRUE)
+abline(v=300)
+# a way to descride this plot is: The intersection shows us that at this point is where there was a switch on the offense that was made past 300 days there were more felony offenses than misdemeanor. But between 250 and 300 the percentage for the type of offense are about the same for the amount of days after release.
+```
+Computing the numeric summaries
+```{r}
+summary(Spruce$Ht.change)#summary of the Ht.change
+```
+Make a histogram
+```{r}
+hist(Spruce$Ht.change)
+```
+A normal quantile plot
+```{r}
+qqnorm(Spruce$Ht.change)
+qqline(Spruce$Ht.change)
+```
+using tapply command to find the numeric summaries of diameter changes for two leves of fertilization.
+```{r}
+tapply(Spruce$Di.change, Spruce$Fertilizer, summary)
+```
+creating a scatter plot of the height changes against the diameter changes
+```{r}
+plot(Spruce$Ht.change, Spruce$Di.change)
+```
+# Chapter 3
+```{r}
+delays <- FlightDelays
+UAdelays <- subset(delays, select=Delay, subset=Carrier=="UA", drop=T)#creates the group for UA delays
+AAdelays <- subset(delays, select=Delay, subset=Carrier=="AA", drop=T)#creats the group for AA delays
+length(UAdelays)#the amount of UA delays
+length(AAdelays)#the amount of AA delays
+length(delays$Delay)# the total amount of delays a way to check
+UA20 <- subset(UAdelays, subset=UAdelays>20)#creating group for UA delays over 20
+AA20 <- subset(AAdelays, subset=AAdelays>20)#creating group for AA delays over 20
+#AA20
+PropUA <- (sum(UAdelays>20))/(length(UAdelays))# creats porportion for UA delays over 20
+PropUA
+PropAA <- (sum(AAdelays>20))/(length(AAdelays))# creats porportion for AA delays over 20
+PropAA
+observed <- PropUA-PropAA# this is the observed difference
+observed
+alldelays <- delays$Delay# creats the all delays group
+poolsize <- length(alldelays)#creats the pool size for all the delays
+Groupone <- length(UAdelays)#creates group one
+Grouptwo <- length(AAdelays)#creates group two
+N <- 10^4-1#resampling permutation test
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(poolsize,size=Groupone, replace=F)
+result[i] <- (sum(alldelays[index]>20)/Groupone)-(sum(alldelays[-index]>20)/Grouptwo)
+} 
+```
+Conducts the two sided test to see if the difference in porportions.
+```{r}
+hist(result)# creats the histogram of the results
+2*min((sum(result >= observed)+1)/(N+1),#Compute probability of an outcome at least as extreme as the observed outcome if closer it is significatnt and can reject the null hypotheses if larger than we cant and there is not enough information to say.
+(sum(result <= observed)+1)/(N+1))
+```
+
+```{r}
+DiffInPairs <- Groceries$Target-Groceries$Walmart # the mean of differences
+DiffInPairs
+observed <- mean(DiffInPairs)
+observed
+poolsize <- length(Groceries$Product)
+poolsize
+sample(c(-1,1), poolsize, replace=T)#Next, we compute a vector of $\pm 1$:plus and minus vector
+```
+getting rid of one of the things.
+```{r}
+DiffInPairs2 <- DiffInPairs[DiffInPairs>-2]# takes out the one of the observations and keeps everything greater than -2
+DiffInPairs2
+observed <- mean(DiffInPairs2)
+observed
+poolsize <- length(DiffInPairs2)
+poolsize
+sample(c(-1,1), poolsize, replace=T)
+```
+
+# Chapter 4
+calculate the mean and standard deviation and create a dot plot of its distribution
+```{r}
+pop <- c(3,5,6,6,8,11,13,15,19,20)
+summary(pop)
+m <- mean(pop) #mean
+s <- sd(pop) #standard deviation
+stripchart(pop, method="stack", at=0)#dot plot
+```
+simulate the sampling distribution by taking random samples of size 4 and plot results. compute the mean and standard error, and compare to the population mean and standard deviation.
+```{r}
+mysample <- sample(pop, size=4,replace=F)
+mean(mysample)
+N<-10^4
+Xbar<- numeric(N)
+for (i in 1:N)
+  {mysample <- sample(pop, size=4,replace=F)
+  Xbar[i] <- mean(mysample)}
+hist(Xbar)
+mean(pop)
+sd(pop)
+mean(Xbar)
+sd(Xbar)
+```
+Use the simmulation to find P(x<11)
+```{r}
+mean(Xbar < 11)
+```
+Drawing random samples without replacind the size 3 from each population and simulate the sampling distribution of the sum of their maximum.
+```{r}
+A <- c(3,5,7,9,10,16)
+B <- c(8,10,11,15,18,25,28)
+mysample <- sample(A, size=3,replace=F)#taking random sample without replacing(F)
+max(mysample)
+mysample2 <- sample(B, size=3,replace=F)
+max(mysample2)
+N=10^4#simulate the sampling distribution of the sum of their maximun
+Xmax <- numeric(N)
+for (i in 1:N)
+  {mysample <- sample(A, size=3,replace=F)
+  mysample2 <- sample(B, size=3,replace=F)
+  Xmax[i] <- max(mysample)+max(mysample2)}
+hist(Xmax) #describes
+sd(Xmax)#describes
+mean(Xmax)#describes
+```
+Draw random samples of size 3 find the maximum union of these two sets
+```{r}
+N=10^4
+UnionMax <- numeric(N)
+for (i in 1:N)
+  {
+  mysample <- sample(A, size=3,replace=F)
+  mysample2 <- sample(B, size=3,replace=F)
+  UnionMax[i] <- max(union(mysample,mysample2))#returns the maximum of the union of sets a and b.
+}
+hist(UnionMax)
+max(UnionMax)
+sd(Xmax)
+mean(Xmax)
+```
+# Problem 4.14
+in random sample of 800 and 28.6% probability, between 220 and 230 people using pbinom.
+```{r}
+postest <- 0.286
+negtest <- 1-postest
+prob <- pbinom(230,800,postest)-pbinom(219,800,postest)
+prob
+plot(dbinom(0:800, 800, postest), type='b')
+```
+The probability that people between 220 and 230 that have a high school diploma is 32%.
+# second problem from a letter to Isaac Newton
+# Example 1
+Six fair dice are tossed and at least one 6 appears.
+```{r}
+postest <- 1/6
+negtest <- 1-postest
+choose(6,1)
+choose(6, 1)*(postest)^1*(negtest)^6
+prob <- 1-pbinom(0,6,postest)
+prob
+plot(dbinom(0:36, 36, postest), type='b')
+```
+# Example 2
+Twelve fair dice are tossed and at least two 6â€™s appear.
+```{r}
+postest <- 1/6
+negtest <- 1-postest
+choose(12,2)
+choose(12, 2)*(postest)^2*(negtest)^12
+prob <- 1-pbinom(1,12,postest)
+prob
+plot(dbinom(0:36, 36, postest), type='b')
+```
+# Example 3
+Eighteen fair dice are tossed and at least three 6â€™s appear.
+```{r}
+postest <- 1/6
+negtest <- 1-postest
+choose(18,3)
+choose(18, 3)*(postest)^3*(negtest)^18
+prob <- 1-pbinom(2,18,postest)
+prob
+plot(dbinom(0:36, 36, postest), type='b')
+```
+From the 3 occurrences the one with the greatest chance of success would be example 1 where there is 6 dice and only one 6 appears.
+
+
+
+
+
+

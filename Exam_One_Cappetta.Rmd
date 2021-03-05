@@ -1,0 +1,454 @@
+---
+title: "Exam_One_A"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+# Terminology
+1. What is the difference between a *population* and a *sample*?
+
+Answer: 
+
+
+2. What is the difference between a *statistic* and a *parameter*.  Give an example of a *statistic*.
+
+Answer:
+
+
+3. In a data set, what is the difference between an *observation* and a *variable*?
+
+Answer:
+
+
+
+# Exploratory Data Analysis
+
+Use one of the following two chunks to load the data set `Alelager`.
+
+If you have the `resampledata` package installed use:
+
+```{r}
+library(resampledata)
+BeerData<-Alelager
+head(BeerData)
+```
+
+**or**, you can use:
+
+```{r}
+BeerData<-read.csv("https://sites.google.com/site/chiharahesterberg/data2/Alelager.csv")
+head(BeerData)
+```
+
+1. Create side-by-side box plots of the alcohol content, grouped by beer type. Comment on the information the box plots convey.
+
+```{r}
+
+```
+
+Commentary: 
+
+
+2. Create a histogram of the calorie content of all beers in the data set. Describe the distribution.
+```{r}
+
+```
+
+Description of distribution:
+
+3.  Sampling Distribution
+*	Simulate the sampling distribution of the mean of the number of calories, for samples of size 3.
+		
+```{r}
+
+```
+
+
+
+*	Create a histogram and describe the simulated sampling distribution.
+		
+```{r}
+
+```
+
+
+Description of sampling distribution:		
+		
+*	Use the simulation to find the probability that the average calorie content of 3 beers is less than 150 calories.
+		
+```{r}
+```
+		
+* Use the simulation to find the probability that the average calorie content of 3 beers is more than 160 calories.
+  
+```{r}
+```
+  
+  
+4. The following code generates two ecdfs, one for calories of ales, one for calories of lagers. 
+ 
+```{r}
+Ales <- subset(BeerData, select=Calories, subset=Type=="Ale", drop=T)
+Lagers <- subset(BeerData, select=Calories, subset=Type=="Lager", drop=T)
+#plot.new()
+plot.ecdf(Ales, col="red")
+plot.ecdf(Lagers, col="blue", add=TRUE)
+abline(v=165)
+```
+
+What percentage of ales in the data set have less than 165 calories? 
+
+What percentage of lagers in the data set have less than 165 calories?
+
+
+# Permutation test
+
+Conduct a permutation test to determine whether there is a difference in the mean calorie content between ales and lagers. Your test should start with a statement of the formal hypotheses and finish with a conclusion.
+
+Put each step in its own chunk and **clearly explain what each chunk is doing and what information the output provides.**
+
+```{r}
+
+```
+
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+(I put in several r-chunks.  You might use more, you might use fewer.)
+
+
+# Critical reading
+
+Below, I conduct a permutation test to test whether there was, on average, a difference in the annual snow fall in Colorado in the years 2019 and 2020.  Identify the mistake and fix it.
+
+First, we load and briefly inspect the data:
+```{r}
+SnowData <- read.csv("https://www.dropbox.com/s/h8lkjdqoqui3bzw/TestDownload2.csv?dl=1")
+head(SnowData)
+```
+
+The data shows annual snow fall recorded at 51 NOAA weather station in Colorado in 2019, and 2020. 
+
+
+The formal statements of the hypotheses are:
+
+$$H_0: \mu_{d_{2020}-d_{2019}}=0$$
+
+$$H_A: \mu_{d_{2020}-d_{2019}}\neq 0$$
+
+where $d_{2020}-d_{2019}$ represents the difference in snow fall by station. 
+
+We'll compute the difference in snowfall at each station and compute the observed mean of differences:
+
+```{r}
+DiffAtStations<-SnowData$Snow2020-SnowData$Snow2019
+Observed<-mean(DiffAtStations)
+Observed
+```
+
+Next, we'll pool the data in order to find a permutation distribution:
+
+```{r}
+PooledData<- c(SnowData$Snow2020, SnowData$Snow2019)
+```
+
+Here is the loop that generates a permutation distribution:
+
+
+```{r}
+N=10^4
+SampleDist<-numeric(N)
+for (i in 1:N)
+{index<-sample(102,51, replace=F)
+SampleDist[i]<- mean(PooledData[index]-PooledData[-index])}
+```
+
+
+
+Finally, we compute the $p$-value for our observed statistic:
+
+```{r}
+2*min((sum(SampleDist >= Observed)+1)/(N+1),
+(sum(SampleDist <= Observed)+1)/(N+1))
+```
+
+Since the $p$-value is small we reject the null hypothesis and conclude that the mean difference in snow depth between 2019 and 2020 was different.
+
+
+
+
+**Your notes are below.  Do NOT delete the following chunk or your file may not knit.
+```{r}
+knitr::knit_exit()
+```
+
+
+
+***Statistics*** 
+art and science of collecting and analyzing data and understand the nature of variability. 
+***Parameter***
+numerical characteristic of a population or of a probability distribution
+***Population*** 
+the entire population, who? ENTIRE number 
+***Sample*** 
+a random number of the population out of the entire population 
+***Treatment***
+usually the experience, what they ask to do (category)
+***Double-blinded***
+patient doesn't know anything about the experience
+Observational experience: no treatment just observations
+
+
+
+*CHAPTER 2*
+
+***normal quantile (plot points)***
+qnorm (x) or (x$y) 
+
+
+***add straight line***
+qqline
+
+
+***plots empirical cumulative distribution function***
+plot.ecdf -> 
+
+
+***random sample of size x***
+x <- rnorm (x) -> 
+
+
+***create a bar chart***
+barplot (table(x))
+
+
+***table chart***
+table (x$y)
+
+
+***contingency table of variables***
+table(x, y)
+prop.table(table(x$x, y$y))
+prop.table(table(x$x, y$x),1)
+prop.table(table(x, y),2) ---> percentage =1 
+
+
+***side by side boxplot***
+boxplot(x$x~y$y)
+
+
+***numeric summaries***
+summary(x)
+
+
+***histogram and normal quantile plot***
+hist(x$y, freq=F)
+mean(x$y)
+sd(x$y)
+plot.new()
+qqnorm(x$y)
+qqline(x$y)
+
+***tapply command to find the numeric summaries***
+tapply(x$y, w$z, summary)
+
+
+***scatter plot***
+plot(x$y, x$z)
+
+
+***quantile function***
+quantile(x$y, na.rm = TRUE)
+
+
+***Create ecdf*** 
+plot.new()
+plot.ecdf(x$y, col="red")
+plot.ecdf(Under25, col="blue", add= TRUE)
+abline(v=400)
++ SAME WITH ANOTHER VARIABLE " no under but over"
+
+Use the level command to determine all the values that the variable Offense has
+
+
+***Make a single ecdf plot that shows the ecdf for each of the Offense values***
+Felony <- subset(RecidivismData, select = Days, subset = Offense=="Felony", drop = T)
+head(Felony)
+Misdemeanor <- subset(RecidivismData, select = Days, subset = Offense=="Misdemeanor", drop = T)
+head(Misdemeanor)
+plot.new()
+plot.ecdf(Felony, col="red")
+plot.ecdf(Misdemeanor, col="blue", add= TRUE)
+
+
+
+
+
+*CHAPTER 3*
+
+Inspect the data set, then explain why this is an example of matched pairs data.
+We need to compare the same product for each store  and keep the data separated, as the price vary between Target and Walmart. For the same product, we compare the difference of price between Target and Walmart. If we compare the price of groceries sold by Target vs the price of groceries sold by Walmart, we need to keep the data matched according to brand. We will need to swap data points within the same matched pair rather than pooling when we resample
+
+
+***Compute summary statistics of the prices for each store***
+summary(Groceries$Target)
+summary(Groceries$Walmart)
+
+
+***Conduct a permutation test to determine whether or not there is a difference in the mean prices***
+poolsize <- length(Groceries$Target)
+poolsize
+sample(c(-1,1), poolsize, replace=T)
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{Sign <- sample(c(-1,1), poolsize, replace=T) 
+Diff <- Sign*DiffInPairs 
+result[i] <- mean(Diff) 
+} 
+How to calculate p-value: 2*(min((sum(result>=observed)+1)/(N+1),(sum(result<=observed)+1)/(N+1)))
+*observed value is the mean*
+
+Redo the hypothesis test without this observation.
+You need to redo the hypothesis test. The resampling, the computation of a p-value, and a conclusion.
+
+1) compute the mean of the new data set
+
+2) resampling loop:
+
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{Sign <- sample(c(-1,1), poolsize, replace=T)
+Diff <- Sign*DiffInPairs
+result[i] <- mean(Diff)
+} 
+
+3) computation of p-value:
+
+2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+
+4) conclusion: This value of p is sufficiently small to reject the null hypothesis in favor of the conclusion that there is a difference in prices between Walmart and Target.
+
+
+***The observed ratio of variances***
+var(x) / var(y)
+
+
+index <- sample(number,size=number, replace=F)
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(4029,size=1123, replace=F)
+result[i] <- mean(UAdelays[index]>=20)-mean(AAdelays[-index]>=20)} 
+2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+
+
+
+***Conduct a two-sided test***
+alldelays <- data~y
+UAdelays <- subset(y, select=y, subset=x=="z", drop=T)
+AAdelays <- subset(y, select=y, subset=x=="z", drop=T)
+
+
+
+
+*CHAPTER 4*
+
+rollsix <- 1/6
+1-pbinom(0, 6, rollsix)
+Use dbinom to plot the distributions: 
+barplot(dbinom(0:12, 12, rollsix),names.arg=0:12)
+
+**Compute the mean and standard deviation and create a dot plot of its distribution**
+pop = c(3,5,6,6,8,11,13,15,19,20)
+mean(pop)
+sd(pop)
+
+
+**Simulate the sampling distribution of X by taking random samples of size 4 and plot your results**
+mysample <- sample(pop, size=4,replace=T)
+N <- 10^4
+Xbar <- numeric(N)
+for (i in 1:N)
+  {mysample <- sample(pop, size=4,replace=T)
+  Xbar[i] <- mean(mysample)}
+  
+
+**find P(X<11)**
+popsample <- mean(Xbar < 11)
+popsample
+
+
+**draw random samples (without replacement) of size 3 from each population, and simulate the sampling distribution of the sum of their maximum**
+popB = c(8,10,11,15,18,25,28)
+N = 10^4
+Xbar <- numeric(N)
+for (i in 1:N)
+  {sampleA <- sample(popA, size=3,replace=F)
+  sampleB <- sample(popB, size=3,replace=F)
+  Xbar[i] <- max(sampleA) + max(sampleB)}
+hist(Xbar)
+stripchart(pop, method="stack", at=0)
+
+
+***probability that you walk past exaclty 20 people before seeing one with Skyhawk apparel***
+skyhawkperson <- 0.15 #success
+noskyhawkperson <- 1-skyhawkperson #failure
+(noskyhawkperson)^20*skyhawkperson
+
+
+***propability that you walk past at least 20 people before seeing one with Skyhawk apparel***
+1-pgeom(20, skyhawkperson)
+
+
+***probability that 4 of the next 20 people you walk past are wearing Skyhawk apparel***
+choose(20, 4)*(skyhawkperson)^4*(noskyhawkperson)^16
+
+
+***probability that it will snow sometime in the next 3 days***
+snow <- 1/7
+pexp(3,1/7)
+
+
+***or how long should I plan my vacation if I want to be 80% certain of snowing***
+qexp(0.8,1/7)
+
+
+
+
+
+
+
+

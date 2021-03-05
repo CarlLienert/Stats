@@ -1,0 +1,617 @@
+---
+title: "Exam_One_A"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+# Terminology
+1. What is the difference between a *population* and a *sample*?
+
+Answer: 
+
+
+2. What is the difference between a *statistic* and a *parameter*.  Give an example of a *statistic*.
+
+Answer:
+
+
+3. In a data set, what is the difference between an *observation* and a *variable*?
+
+Answer:
+
+
+
+# Exploratory Data Analysis
+
+Use one of the following two chunks to load the data set `Alelager`.
+
+If you have the `resampledata` package installed use:
+
+```{r}
+library(resampledata)
+BeerData<-Alelager
+head(BeerData)
+```
+
+**or**, you can use:
+
+```{r}
+BeerData<-read.csv("https://sites.google.com/site/chiharahesterberg/data2/Alelager.csv")
+head(BeerData)
+```
+
+1. Create side-by-side box plots of the alcohol content, grouped by beer type. Comment on the information the box plots convey.
+
+```{r}
+
+```
+
+Commentary: 
+
+
+2. Create a histogram of the calorie content of all beers in the data set. Describe the distribution.
+```{r}
+
+```
+
+Description of distribution:
+
+3.  Sampling Distribution
+*	Simulate the sampling distribution of the mean of the number of calories, for samples of size 3.
+		
+```{r}
+
+```
+
+
+
+*	Create a histogram and describe the simulated sampling distribution.
+		
+```{r}
+
+```
+
+
+Description of sampling distribution:		
+		
+*	Use the simulation to find the probability that the average calorie content of 3 beers is less than 150 calories.
+		
+```{r}
+```
+		
+* Use the simulation to find the probability that the average calorie content of 3 beers is more than 160 calories.
+  
+```{r}
+```
+  
+  
+4. The following code generates two ecdfs, one for calories of ales, one for calories of lagers. 
+ 
+```{r}
+Ales <- subset(BeerData, select=Calories, subset=Type=="Ale", drop=T)
+Lagers <- subset(BeerData, select=Calories, subset=Type=="Lager", drop=T)
+#plot.new()
+plot.ecdf(Ales, col="red")
+plot.ecdf(Lagers, col="blue", add=TRUE)
+abline(v=165)
+```
+
+What percentage of ales in the data set have less than 165 calories? 
+
+What percentage of lagers in the data set have less than 165 calories?
+
+
+# Permutation test
+
+Conduct a permutation test to determine whether there is a difference in the mean calorie content between ales and lagers. Your test should start with a statement of the formal hypotheses and finish with a conclusion.
+
+Put each step in its own chunk and **clearly explain what each chunk is doing and what information the output provides.**
+
+```{r}
+
+```
+
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+(I put in several r-chunks.  You might use more, you might use fewer.)
+
+
+# Critical reading
+
+Below, I conduct a permutation test to test whether there was, on average, a difference in the annual snow fall in Colorado in the years 2019 and 2020.  Identify the mistake and fix it.
+
+First, we load and briefly inspect the data:
+```{r}
+SnowData <- read.csv("https://www.dropbox.com/s/h8lkjdqoqui3bzw/TestDownload2.csv?dl=1")
+head(SnowData)
+```
+
+The data shows annual snow fall recorded at 51 NOAA weather station in Colorado in 2019, and 2020. 
+
+
+The formal statements of the hypotheses are:
+
+$$H_0: \mu_{d_{2020}-d_{2019}}=0$$
+
+$$H_A: \mu_{d_{2020}-d_{2019}}\neq 0$$
+
+where $d_{2020}-d_{2019}$ represents the difference in snow fall by station. 
+
+We'll compute the difference in snowfall at each station and compute the observed mean of differences:
+
+```{r}
+DiffAtStations<-SnowData$Snow2020-SnowData$Snow2019
+Observed<-mean(DiffAtStations)
+Observed
+```
+
+Next, we'll pool the data in order to find a permutation distribution:
+
+```{r}
+PooledData<- c(SnowData$Snow2020, SnowData$Snow2019)
+```
+
+Here is the loop that generates a permutation distribution:
+
+
+```{r}
+N=10^4
+SampleDist<-numeric(N)
+for (i in 1:N)
+{index<-sample(102,51, replace=F)
+SampleDist[i]<- mean(PooledData[index]-PooledData[-index])}
+```
+
+
+
+Finally, we compute the $p$-value for our observed statistic:
+
+```{r}
+2*min((sum(SampleDist >= Observed)+1)/(N+1),
+(sum(SampleDist <= Observed)+1)/(N+1))
+```
+
+Since the $p$-value is small we reject the null hypothesis and conclude that the mean difference in snow depth between 2019 and 2020 was different.
+
+
+
+**Your notes are below.  Do NOT delete the following chunk or your file may not knit.
+```{r}
+knitr::knit_exit()
+```
+
+
+
+**Chapter 1 - Terminology**
+discrete vs. continous
+factor vs. numerical variables - factor variables are what we are interested in, all others are numerical
+
+What is pdf? *probability distribution function* - histogram (area under the curve)
+
+what is cdf? *cumulative distribution function*
+(S curve 0 to 1)It show exactly the two things we're interested in.  The solid curve can be thought of as the theoretical cdf, while the dotted curve is the cdf determined from the sample data.  
+Since the cdf is defined as a probability, its values are always beteen 0 and 1.  Also, its graph always has the same shape.  Where and how steeply the graph goes from 0 to 1 changes.
+
+Now, let's look at the cdf for the sample data, this is called the **empircal cummulative distribution function** (ecdf)
+plot.new()
+plot.ecdf(smoker, col="red")
+plot.ecdf(nonsmoker, col="blue", add=TRUE)
+abline(v=3000)
+
+The horizontal axes of a cdf graph has units of the data (time, number of people, etc.), the vertical axes is probability/percentage.
+
+In cdfs the probability is on the vertical axes.  
+* In pdfs the probability is an area under the curve.
+
+In a data set, each row is an *observation*, each column is a *variable*
+*Population*: represents ALL the individual cases
+*Sample*: subset of the population
+** Random sample: a sample of independent and identically distributed observations
+** Sampling with replacement (N=5, n=2 there are 5x5 different samples of size 2) P = choose(N,n)*(success)^#of successes*(failure)^#of failures
+vs. without replacement (no independence, 1st person has 1/10 chance, next person has 1/9 change etc.) P = (350 4)*(650 6)/(1000 10)
+Random variables (capital letter, A)
+Actual values or data (lower case letter, a)
+
+*Parameter*: a numerical characteristic of a population or of a probability distribution. (mean of population)
+*Statistic*: a numerical characteristic of data sample (mean of sample)
+
+sample surveys: questions of a population of individuals (registered voters, online shoppers)
+census: poll everyone in the population
+Statistical Inference: drawing a conclusion about a population based on info about a sample.
+Sampling frame: a list to choose sample: college students, directory
+Probability sampling scheme: stratified sampling - population is dividing into nonoverlapping groups and random samples are drawn from each group, Cluster sampling - nonoverlapping clusters and random sample drawn from clusters
+
+*Observational study* - researchers observe but do not influence the outcome - no cause and effect conclusions can be drawn
+*Experiment study* - researchers manipulate the environment in some way to observe repsonses "treatments" - is it statistically significant or by chance?
+Double blind experiment - neither researcher or subject knows who is receiving treatment. (reduce bias)
+
+**Chapter 2 - Data Analysis**
+
+variance?
+
+center - median
+average - mean (trimmed mean 25% trim means 25% on each side - mean(x,trim=0.25))
+spread - range (largest-smallest), interquartile range (IQR)(third - first), standard deviation
+
+
+*Read data*
+FlightData <-  read.csv("https://sites.google.com/site/chiharahesterberg/data2/FlightDelays.csv")
+
+*Plotting*
+Barplot
+barplot(table(FlightData$Carrier)) - used to describe the distribution of a categorical (factor) variable
+
+Scatterplot
+plot(Beerwings$Hotwings,Beerwings$Beer)
+
+table(FlightData$Carrier, FlightData$Delayed30) contigency table - summarizes the counts in different categories
+prop.table(table(FlightData$Carrier, FlightData$Delayed30))
+prop.table(table(FlightData$Carrier, FlightData$Delayed30),1) - rows
+prop.table(table(FlightData$Carrier, FlightData$Delayed30),2) - columns
+
+hist(FlightData$Delay, freq=F)
+
+smoker <- subset(BirthsData, select=Weight, subset=Smoker=="Yes", drop=T)
+UAOnly <- subset(FlightData, subset=Carrier=="UA")
+dim(UAOnly)
+min
+max
+The mean (average) and median are used to measure the *center* of a data set.
+range(UAOnly$Delay)  *range*: largest - smallest
+
+*Quartiles*
+one improvement is the IQR: disregard the smallet 1/4 of the data and the largest 1/4 of the data and measure the range of the middle 2 quarters
+quantile(UAOnly$Delay, na.rm = TRUE) - quantile is also percentile
+sd, standard deviation
+summary(FlightData)
+
+a nice way to quickly obtain a more focused answer.  Say we want mean delay by Carrier:
+tapply(FlightData$Delay, FlightData$Carrier, mean)
+tapply(FlightData$Delay, FlightData$Day, sd)
+
+*Boxplot*
+**draw a box with bottom at 1st quartile and top at 3rd quartile, draw a line through box at median, compute Q3+1.5xIQR and Q1-1.5xIQR for upper and lower fences with whiskers, observe outliers
+boxplot(FlightData$Delay~FlightData$Carrier)
+remove <- subset(FlightData, subset=Delay<=100)
+boxplot(remove$Delay~remove$Destination)
+
+A normal distriubtion (for a continuous random variable) has a graph that looks like the one below.  It has two **parameters**: the mean and the standard deviation.The shapes of the histogram and of the normal distribution are fairly close. 
+
+plot.new()
+qqnorm(Spruce$Height5)
+qqline(Spruce$Height5)
+
+empirical cumulative distribution functions (ecdf) is an estimate of the underlying cumulative distribution function (cdf) for a sample.
+
+skewed left and right
+**Skewness and Kurtosis**
+
+*Skewness* and *Kurtosis* describe how far a distribution from being normal. 
+
+* a positive number means skewed right
+* a negative number means skewed left
+* the farther the number is from zero, the more skewed it is
+
+*Kurtosis* reflects high peaks (higer than a normal distribution) and longer tails (again, as compared to a normal distribution)
+
+* For now, we'll content ourselves with: the farther the Kurtosis is from 0, the more "un" normal the distribution
+skewness(nonsmoker)
+kurtosis(smoker)
+
+**Chapter 3 - Hypothesis Test**
+
+1. State hypothesis
+2. look at observed data, calculate mean of observed data
+3. Resample
+4. Calculate mean of resample
+5. Find probability of resample mean to observed mean
+
+to create a vector
+times=c(30, 25, 20, 18, 21, 22)
+druggroup <- combn(times,3)  all the ways three of the times could have been (but weren't) placed in the drug group:
+
+total items there are "n choose k" ways to do this: choose(6,3)
+
+Null hypothesis, Alternative hypothesis
+two-sided (*2) vs. one-side (if refers to one being larger, etc)
+
+If the probability is NOT small this **DOES NOT** mean that the null hypothesis is true.  It means there is not statistical evidence to support rejecting the null hypothesis.
+
+*R code*
+observed <- mean(UAdelays)-mean(AAdelays)
+
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(4029,size=1123, replace=F)
+result[i] <- mean(alldelays[index])-mean(alldelays[-index])
+
+2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+
+Hypothesis test statements:
+
+$$H_0: p_{May}-p_{June}=0$$
+
+$$H_A: p_{May}-p_{June}\neq 0$$
+
+Load the data. Create two subsets, one each for May and June.
+
+library(resampledata)
+delays <- FlightDelays
+Maydelays <- subset(delays, select=Delay, subset=Month=="May", drop=T)
+Junedelays <- subset(delays, select=Delay, subset=Month=="June", drop=T)
+Look at the three vectors and their sizes to make sure they seem like the right thing.
+
+
+length(Maydelays)
+length(Junedelays)
+length(delays$Delay)
+
+
+Create subsets of delays more than 20 minutes.  Again look at the vectors and their sizes to make sure they are the right thing.
+
+Choose only a part of the data
+
+May20 <- subset(Maydelays, subset=Maydelays>20)
+length(May20)
+length(Maydelays)
+June20 <- subset(Junedelays, subset=Junedelays>20)
+
+Computation of proportions:
+
+length(May20)/length(Maydelays)
+length(June20)/length(Junedelays)
+
+
+Or, another way to do this:
+
+Compute the proportion of delays more than 20 minutes in each month:
+
+PropMay <- (sum(Maydelays>20))/(length(Maydelays))
+PropMay
+PropJune <- (sum(Junedelays>20))/(length(Junedelays))
+PropJune
+
+Compute the *observed* difference in proportions:
+
+observed <- PropMay-PropJune
+boxplot(delays$Delay~delays$Month)
+
+Pool the data and record the size of 1) the pooled data, and 2) the size of the two groups:
+
+alldelays <- delays$Delay
+poolsize <- length(alldelays)
+poolsize
+GroupOneSize <- length(Maydelays)
+GroupOneSize
+GroupTwoSize <- length(Junedelays)
+GroupTwoSize
+
+Run a resampling permutation test:
+
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(poolsize,size=GroupOneSize, replace=F)
+result[i] <- (sum(alldelays[index]>20)/GroupOneSize)-(sum(alldelays[-index]>20)/GroupTwoSize)
+
+hist(result)
+
+2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+
+Matched Pairs
+
+
+DiffInPairs <- IceCream$VanillaCalories-IceCream$ChocolateCalories
+observed <- mean(DiffInPairs)
+
+summary(DiffInPairs)
+sd(DiffInPairs)
+poolsize <- length(IceCream$Brand)
+
+sample(c(-1,1), poolsize, replace=T)
+
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{Sign <- sample(c(-1,1), poolsize, replace=T) #random swapping assignment
+  Diff <- Sign*DiffInPairs #compute differences within matched pairs
+result[i] <- mean(Diff) #assign the mean of the differences to the result vector
+
+hist(result)
+
+min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+
+
+EXAMPLE - Proportions/Variance
+
+a.) Find the requested difference of proportions for the data set.   The test statistic we'll use is this difference of proportions.  This is the observed difference of proportions.
+```{r}
+delays <- FlightDelays
+UAdelays <- subset(delays, select=Delay, subset=Carrier=="UA", drop=T)
+#UAdelays
+AAdelays <- subset(delays, select=Delay, subset=Carrier=="AA", drop=T)
+#AAdelays
+UAdelays20 <- sum(UAdelays>20)
+UAprop <- UAdelays20/length(UAdelays)
+UAprop
+
+AAdelays20 <- sum(AAdelays>20)
+AAprop <- AAdelays20/length(AAdelays)
+AAprop
+
+observed <- UAprop-AAprop
+observed
+
+```
+Preparation for resampling
+```{r}
+alldelays <- delays$Delay
+poolsize <- length(alldelays)
+#poolsize
+Group1 <- length(UAdelays)
+Group2 <- length(AAdelays)
+#Group1
+#Group2
+```
+
+```{r}
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(poolsize, size=Group1, replace=F)
+result[i] <- (sum(alldelays[index]>20)/Group1)-(sum(alldelays[-index]>20)/Group2)}
+
+hist(result)
+```
+
+Compute probability of an outcome at least extreme as the observed outcome.
+
+```{r}
+2*min((sum(result >= observed)+1)/(N+1), (sum(result <= observed)+1)/(N+1))
+```
+The probability is considered small so we can reject the null hypothesis. We can conclude there is a significant difference in the proportion of delays over 20 minutes in the United Airline and American Airline flight delays.
+
+
+b.) Use var to find the variance of the UA delays and the AA delays.  The statistic we'll use is the ratio of these two variances.  Compute this ratio for the data set.  This is the observed ratio of variances.
+
+
+Hypothesis test statements:
+null hypothesis: var(UA)/var(AA) = 1 , alternative hypothesis: var(UA)/var(AA) does not equal 1
+
+
+```{r}
+var(UAdelays)
+var(AAdelays)
+observed2 <- var(UAdelays)/var(AAdelays)
+observed2
+```
+
+```{r}
+N <- 10^4-1
+result2 <- numeric(N)
+for (i in 1:N)
+{index <- sample(poolsize, size=Group1, replace=F)
+result2[i] <- var(alldelays[index])/var(alldelays[-index])}
+```
+```{r}
+hist(result2)
+```
+
+Compute probability of an outcome at least extreme as the observed outcome.
+
+```{r}
+2*min((sum(result2 >= observed2)+1)/(N+1), (sum(result2 <= observed2)+1)/(N+1))
+```
+The probability is not sufficiently small. We can't reject the null hypothesis. We can conclude there is not a difference in the variance for United Airlines and American Airlines. 
+
+*Remove an item*
+WithoutCereal <- DiffInPairs[DiffInPairs>-2]
+
+**Chapter 4 - Distributions**
+Repeating this -  sample, and calculate the mean time - produces a *sampling distribution*.  This will be a distribution against which we can compare an observed statistic.
+
+*Sampling Distribution*
+We are going to choose a sample of 6 times, calculate the mean, store that result, repeat...
+
+N=10^4
+Xbar <- numeric(N)
+for (i in 1:N)
+  {mysample <- sample(ChiMarathonMen$FinishMin, size=6,replace=F)
+  Xbar[i] <- mean(mysample)} - can be mean or min or max
+
+The two mean values are very close to one another.
+* The two standard deviations are not, but: is pretty close to the standard error.
+It's not so clear what (if anything) is happening here.  One point here is that the two statistics: sample mean vs sample min must be treated differently. 
+
+Probability is calculated from a *distribution*.  
+
+There are many different distributions: normal, uniform, binomial, exponential, geometric, Poisson, etc. etc.  
+
+We are making two very important assumptions:
+
+* The probability for each person who tests is the **same**.
+* Each person's test is **independent** of other tests.
+
+success and failure (failure = 1-success)
+choose(15, 2)*(postest)^2*(negtest)^13
+
+choose(15,0)*postest^0*negtest^15+choose(15,1)*postest^1*negtest^14+choose(15,2)*postest^2*negtest^13+choose(15, 3)*postest^3*negtest^12
+
+The usual language for binomial distributions is that one possibility (testing positive) is called a *success*, the other possibility (testing negative) is called a *failure*.  There are only *2 options*.  Other examples: it rains today (or not),  passing a statistics exam (or not), etc.
+
+plot(dbinom(0:15, 15, postest), type='h')
+
+* d-*dist* we saw above when we plotted the distribution.  It is the *pdf*
+* p-*dist* which computes the area in the lower tail, i.e. $P(X \leq x)$. It is the *cdf*. Be *very* careful - the $\leq$ makes a difference! less than or equal to 
+* q-*dist* which computes the value $q$ such that $P(X \leq q)= \text{ the prob. you send}$ you give it a probability, $p$, and it gives you back (in this case) the number of positive tests you'll have with probability
+* r-*dist* which generates a random sample from the given distribution.  This is useful for running simulations.
+
+pbinom(3,15,postest)
+
+Finally, if we want to generate a random sample from this distribution:
+```{r}
+rbinom(100, 15, postest)```
+
+If you plot these data in a histogram - you have a *sampling distribution* from a binomials distributed population.
+
+For example, a *hypothesis test* is an argument that an observed, measured outcome (statistic) is significant (i.e. not fake news).
+
+This argument is, ultimately, a probability argument. No one can *prove* that the vaccine prevents Covid, but they can demonstrate that the probability is high.
+
+Probability is calculated from a *distribution*.  
+
+There are many different distributions: normal, uniform, binomial, exponential, geometric, Poisson, etc. etc.  
+
+To confuse matters, distributions play a variety of roles: they can be the distribution of the population, the distribution of a sample, a permutation distribution, a sampling distribution, etc. 
+
+The sampling distribution depends on the distribution of the population. The sampling distribution is the one we use to calculate the probability for the hypothesis test.
+
+Last time we learned about a *binomial distribution.*  A particular kind of experiment (random variable) has a binomial distribution.
+
+* We repeat something $n$ times - called trials.
+* The probability of *success* of each trial is exactly the same and independent of other trials.
+
+Geometric - That is, some number of failed attempts followed by a single successful attempt.
+
+Don't forget to subtract from 1 to get the upper tail.  The following is $$P(B \geq 5)=1-P(B < 5)$$
+1-pgeom(3,basketsuccess)
+
+
+
+
+
+

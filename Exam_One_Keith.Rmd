@@ -1,0 +1,1645 @@
+---
+title: "Exam_One_A"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+# Terminology
+1. What is the difference between a *population* and a *sample*?
+
+Answer: 
+
+
+2. What is the difference between a *statistic* and a *parameter*.  Give an example of a *statistic*.
+
+Answer:
+
+
+3. In a data set, what is the difference between an *observation* and a *variable*?
+
+Answer:
+
+
+
+# Exploratory Data Analysis
+
+Use one of the following two chunks to load the data set `Alelager`.
+
+If you have the `resampledata` package installed use:
+
+```{r}
+library(resampledata)
+BeerData<-Alelager
+head(BeerData)
+```
+
+**or**, you can use:
+
+```{r}
+BeerData<-read.csv("https://sites.google.com/site/chiharahesterberg/data2/Alelager.csv")
+head(BeerData)
+```
+
+1. Create side-by-side box plots of the alcohol content, grouped by beer type. Comment on the information the box plots convey.
+
+```{r}
+
+```
+
+Commentary: 
+
+
+2. Create a histogram of the calorie content of all beers in the data set. Describe the distribution.
+```{r}
+
+```
+
+Description of distribution:
+
+3.  Sampling Distribution
+*	Simulate the sampling distribution of the mean of the number of calories, for samples of size 3.
+		
+```{r}
+
+```
+
+
+
+*	Create a histogram and describe the simulated sampling distribution.
+		
+```{r}
+
+```
+
+
+Description of sampling distribution:		
+		
+*	Use the simulation to find the probability that the average calorie content of 3 beers is less than 150 calories.
+		
+```{r}
+```
+		
+* Use the simulation to find the probability that the average calorie content of 3 beers is more than 160 calories.
+  
+```{r}
+```
+  
+  
+4. The following code generates two ecdfs, one for calories of ales, one for calories of lagers. 
+ 
+```{r}
+Ales <- subset(BeerData, select=Calories, subset=Type=="Ale", drop=T)
+Lagers <- subset(BeerData, select=Calories, subset=Type=="Lager", drop=T)
+#plot.new()
+plot.ecdf(Ales, col="red")
+plot.ecdf(Lagers, col="blue", add=TRUE)
+abline(v=165)
+```
+
+What percentage of ales in the data set have less than 165 calories? 
+
+What percentage of lagers in the data set have less than 165 calories?
+
+
+# Permutation test
+
+Conduct a permutation test to determine whether there is a difference in the mean calorie content between ales and lagers. Your test should start with a statement of the formal hypotheses and finish with a conclusion.
+
+Put each step in its own chunk and **clearly explain what each chunk is doing and what information the output provides.**
+
+```{r}
+
+```
+
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+(I put in several r-chunks.  You might use more, you might use fewer.)
+
+
+# Critical reading
+
+Below, I conduct a permutation test to test whether there was, on average, a difference in the annual snow fall in Colorado in the years 2019 and 2020.  Identify the mistake and fix it.
+
+First, we load and briefly inspect the data:
+```{r}
+SnowData <- read.csv("https://www.dropbox.com/s/h8lkjdqoqui3bzw/TestDownload2.csv?dl=1")
+head(SnowData)
+```
+
+The data shows annual snow fall recorded at 51 NOAA weather station in Colorado in 2019, and 2020. 
+
+
+The formal statements of the hypotheses are:
+
+$$H_0: \mu_{d_{2020}-d_{2019}}=0$$
+
+$$H_A: \mu_{d_{2020}-d_{2019}}\neq 0$$
+
+where $d_{2020}-d_{2019}$ represents the difference in snow fall by station. 
+
+We'll compute the difference in snowfall at each station and compute the observed mean of differences:
+
+```{r}
+DiffAtStations<-SnowData$Snow2020-SnowData$Snow2019
+Observed<-mean(DiffAtStations)
+Observed
+```
+
+Next, we'll pool the data in order to find a permutation distribution:
+
+```{r}
+PooledData<- c(SnowData$Snow2020, SnowData$Snow2019)
+```
+
+Here is the loop that generates a permutation distribution:
+
+
+```{r}
+N=10^4
+SampleDist<-numeric(N)
+for (i in 1:N)
+{index<-sample(102,51, replace=F)
+SampleDist[i]<- mean(PooledData[index]-PooledData[-index])}
+```
+
+
+
+Finally, we compute the $p$-value for our observed statistic:
+
+```{r}
+2*min((sum(SampleDist >= Observed)+1)/(N+1),
+(sum(SampleDist <= Observed)+1)/(N+1))
+```
+
+Since the $p$-value is small we reject the null hypothesis and conclude that the mean difference in snow depth between 2019 and 2020 was different.
+
+
+
+
+**Your notes are below.  Do NOT delete the following chunk or your file may not knit.
+```{r}
+knitr::knit_exit()
+```
+
+
+
+
+
+#Chapter 1: STATS Terminology
+
+Statistics is the science concerned with developing and studying methods for collecting, analyzing, interpreting and presenting empirical data. Statistics is a highly interdisciplinary field; research in statistics finds applicability in virtually all scientific fields and research questions in the various scientific fields motivate the development of new statistical methods and theory. In developing methods and studying the theory that underlies the methods statisticians draw on a variety of mathematical and computational tools.
+
+
+â€¢	Observation:
+is a fact or figure we collect about a given variable. It can be expressed as a number or as a quality. An example of a number is the observation "25" for the age of a mother at the birth of her first child.
+
+â€¢	Variable:
+A variable is an attribute that describes a person, place, thing, or idea. The value of the variable can "vary" from one entity to another.
+
+â€¢	population:
+is the entire group of individuals you want to study, and a sample is a subset of that group.
+
+â€¢	(random) sample:
+A simple random sample is a subset of a statistical population in which each member of the subset has an equal probability of being chosen. A simple random sample is meant to be an unbiased representation of a group. ... Random sampling is used in science to conduct randomized control tests or for blinded experiments.
+
+â€¢	numeric variable:
+Numeric variables, as you might expect, have data values that are recognized as numbers. This means that they can be sorted numerically or entered into arithmetic calculations. When viewed in the Data View window, system-missing values for numeric variables will appear as a dot (i.e., â€œ.â€).
+
+â€¢	factor variable:
+Factors are the variables that experimenters control during an experiment in order to determine their effect on the response variable. ... Factors can be a categorical variable or based on a continuous variable but only use a limited number of values chosen by the experimenters.
+
+â€¢	random variable:
+variable whose values depend on outcomes of a random phenomenon.
+
+â€¢	independent and identically distributed:
+a collection of random variables is independent and identically distributed if each random variable has the same probability distribution as the others and all are mutually independent. This property is usually abbreviated as i.i.d. or iid or IID.
+
+â€¢	sampling with replacement:
+When a sampling unit is drawn from a finite population and is returned to that population, after its characteristic(s) have been recorded, before the next unit is drawn, the sampling is said to be â€œwith replacementâ€.
+
+â€¢	sampling without replacement:
+In sampling without replacement, each sample unit of the population has only one chance to be selected in the sample. For example, if one draws a simple random sample such that no unit occurs more than one time in the sample, the sample is drawn without replacement.
+
+â€¢	parameter:
+A parameter is a quantitative characteristic of the population that youâ€™re interested in estimating or testing (such as a population mean or proportion).
+
+â€¢	Statistic-A statistic is a quantitative characteristic of a sample that often helps estimate or test the population parameter (such as a sample mean or proportion).
+
+â€¢	statistical inference-
+Statistical inference is the process of using data analysis to infer properties of an underlying distribution of probability. Inferential statistical analysis infers properties of a population, for example by testing hypotheses and deriving estimates.
+
+â€¢	observational study-
+use samples to draw conclusions about a population when the researchers do not control the treatment, or independent variable, that relates to the primary research question.
+
+â€¢	experimental study:
+Experimental studies are ones where researchers introduce an intervention and study the effects. Experimental studies are usually randomized, meaning the subjects are grouped by chance. ... The researchers then study what happens to people in each group. Any difference in outcomes can then be linked to the intervention.
+
+* Interquartile Range: The IQR is a measure of variability, based on dividing a data set into quartiles. Quartiles divide a rank-ordered data set into four equal parts. The values that separate parts are called the first, second, and third quartiles; and they are denoted by Q1, Q2, and Q3, respectively.In descriptive statistics, the interquartile range (IQR), also called the midspread, middle 50%, or Hâ€‘spread, is a measure of statistical dispersion, being equal to the difference between 75th and 25th percentiles, or between upper and lower quartiles,[1][2] IQR = Q3 âˆ’  Q1. In other words, the IQR is the first quartile subtracted from the third quartile; these quartiles can be clearly seen on a box plot on the data. It is a trimmed estimator, defined as the 25% trimmed range, and is a commonly used robust measure of scale.
+
+*Standard Deviation: n statistics, the standard deviation is a measure of the amount of variation or dispersion of a set of values.[1] A low standard deviation indicates that the values tend to be close to the mean (also called the expected value) of the set, while a high standard deviation indicates that the values are spread out over a wider range.
+
+*Range:In statistics, the range of a set of data is the difference between the largest and smallest values. It can give you a rough idea of how the outcome of the data set will be before you look at it actually [1] Difference here is specific, the range of a set of data is the result of subtracting the smallest value from largest value.
+
+**ECDR: In statistics, an empirical distribution function (commonly also called an empirical Cumulative Distribution Function, eCDF) is the distribution function associated with the empirical measure of a sample. This cumulative distribution function is a step function that jumps up by 1/n at each of the n data points. Its value at any specified value of the measured variable is the fraction of observations of the measured variable that are less than or equal to the specified value.
+
+# Chapter 2:Exploratory Data Analysis---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---
+
+
+# 2.1 Basic Plots
+
+Here are two options for loading data.
+
+The first is to obtain it directly from the textbook website:
+
+```{r}
+FlightData <-  read.csv("https://sites.google.com/site/chiharahesterberg/data2/FlightDelays.csv")
+head(FlightData)
+```
+
+For the second, first go to the textbook website, download the zip file with all datasets for the entire textbook to your laptop.  Then use a command like the one below.  You may need to adjust the path depending on where you put the data on your laptop.
+
+```{r}
+FlightData <- read.csv("Data/FlightDelays.csv")
+head(FlightData)
+```
+
+Warning: **don't** knit your file with something like:
+
+```{r}
+FlightData
+```
+
+The .html will show ALL the data!
+
+Use:
+
+```{r}
+#head(FlightData)
+```
+
+To create a simple bar plot:
+
+```{r}
+barplot(table(FlightData$Carrier))
+```
+
+At a glance we can see there are more AA flights than UA flights.  In fact, several times more.  This might seem unimportant but often the validity of statisitical tests depends on samples having similar characteristics.
+
+
+Or, if we're interested in departure time:
+
+```{r}
+barplot(table(FlightData$DepartTime))
+```
+
+The table shown in the book can be generated by looking at the "table" part:
+
+The formating isn't as nice here, but we won't worry about that.  I'll expect you to be able to interpret output from R, but I won't ask you to spend lots of time making the output pretty.
+
+```{r}
+table(FlightData$Carrier)
+```
+
+The contingency tables are generated with:
+
+```{r}
+table(FlightData$Carrier, FlightData$Delayed30)
+prop.table(table(FlightData$Carrier, FlightData$Delayed30))
+prop.table(table(FlightData$Carrier, FlightData$Delayed30),1)
+prop.table(table(FlightData$Carrier, FlightData$Delayed30),2)
+```
+
+Be careful!  Notice each of the percentage tables are different.  It is **ALWAYS** important to think critically about the output.  Does it make sense?  Does it tell you what you want to know?
+
+The second prop.table is likely the one we want. A likely question is whether UA and AA have a similar percentange of flights delayed by 30 minutes or more.  For this sample: 13.5% of AA, 18.2% of UA.  Is this *enough* of a difference to conclude that UA has more flights delayed by 30 minutes or more?  Or, is this difference just due to the chance of the sample?
+
+```{r}
+?table
+```
+
+The histogram (distribution) for the delays for all the flights is given by:
+
+```{r}
+hist(FlightData$Delay)
+```
+
+The shape of the distribution is important.  This one is *skewed right*.
+
+Notice, this is not the histogram in the book, which is delays for United only. We need to first sort the dataset to have only UA flights.  Preparing data sets is commonly requires, we'll look at more complicated examples as we go along.
+
+```{r}
+UAOnly <- subset(FlightData, subset=Carrier=="UA")
+dim(UAOnly)
+```
+```{r}
+hist(UAOnly$Delay)
+```
+
+If you want to control the width of the category bars:
+
+```{r}
+min(UAOnly$Delay)
+max(UAOnly$Delay)
+```
+
+To look at this as a pdf turn the frequence into probabilities:
+
+```{r}
+hist(UAOnly$Delay, freq=FALSE)
+```
+
+Dot plots: hmm I'm not sure this is going to come up.  We'll come back to this if we need to.
+
+# Numeric summaries
+The mean (average) and median are used to measure the *center* of a data set.
+
+Computing the mean.
+
+```{r}
+mean(UAOnly$Delay)
+mean(UAOnly$Delay, trim=.25)
+```
+
+The trim, for trim=.25, removes 25% of the data from each side.
+
+Hmm, think about what the trimmed mean tells us.  
+
+Computing the median.  Sort all the data from least to greatest and pick the one right in the middle.  If there is no data point in the middle, take the mean of the two middle values.
+
+```{r}
+median(UAOnly$Delay)
+```
+
+This means 1/2 of the flights had delays less than -1 minute 1/2 greater than -1 minute.  Of course this is an odd way to say this.  1/2 the flights left 1 minute or more early.  Notice this does not tell us how many of the remaining flights left on time.
+
+The spread of a data set is how spread out is the data:
+
+a very rough measure of spread is *range*: largest - smallest
+```{r}
+max(UAOnly$Delay)
+min(UAOnly$Delay)
+range(UAOnly$Delay)
+```
+
+So, the "range" is $377-(-17)$
+
+one improvement is the IQR: disregard the smallet 1/4 of the data and the largest 1/4 of the data and measure the range of the middle 2 quarters
+
+```{r}
+quantile(UAOnly$Delay)
+```
+
+So, the IQR is $12.5-(-5)$
+
+Better is the standard deviation:
+
+
+```{r}
+sd(UAOnly$Delay)
+```
+
+For this to be helpful we need to compare it to something:
+
+```{r}
+AAOnly <- subset(FlightData, subset=Carrier=="AA")
+head(AAOnly)
+sd(AAOnly$Delay)
+```
+
+So, UA delays are more spread out than AA delays.  But....perhaps not by a "statistically signficant" amount...?
+
+```{r}
+width=seq(-50,700, by=25)
+hist(UAOnly$Delay, width)
+hist(AAOnly$Delay, width)
+```
+
+
+Notice, I used the width feature to make sure the scale for both graphs is the same.  If the scales are different it's hard to compare.
+
+
+There are several versions of the standard deviation. We'll come back to that as we apply it.
+
+
+The summary command might be helpful. Or it might just be a mess.  Often, more focused questions are better.
+
+```{r}
+summary(FlightData)
+```
+
+Here is a nice way to quickly obtain a more focused answer.  Say we want mean delay by Carrier:
+
+```{r}
+tapply(FlightData$Delay, FlightData$Carrier, mean)
+```
+
+Or the standard deviation of flight delay by day:
+
+```{r}
+tapply(FlightData$Delay, FlightData$Day, sd)
+```
+
+
+Box plots are a convenient way to view spread graphically:
+
+```{r}
+boxplot(FlightData$Delay~FlightData$Carrier)
+```
+
+Notice you can't even really see the IQR. This is because the *outliers* are large compared to the *typical* delay times.  In practice you might remove the two *really* extreme outliers from the AA data and try again.
+
+```{r}
+boxplot(FlightData$Delay~FlightData$Destination)
+```
+
+```{r}
+remove <- subset(FlightData, subset=Delay<=100)
+boxplot(remove$Delay~remove$Destination)
+```
+
+That's a little better.  Notice the spread (variability) of flight to IAD and MIA is greater than to the other airports.
+
+#Exercise 2.4------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+Part A)
+```{r}
+FlightData <-  read.csv("https://sites.google.com/site/chiharahesterberg/data2/FlightDelays.csv")
+head(FlightData)
+```
+
+```{r}FlightData <- read.csv("Data/FlightDelays.csv")
+head(FlightData)
+```
+Partb
+
+```{r}
+barplot(table(FlightData$DepartTime))
+```
+
+Part b)Contingency Table
+```{r}
+table(FlightData$Day, FlightData$Delayed30)
+prop.table(table(FlightData$Day, FlightData$Delayed30),1)
+```
+Part C)
+```{r}
+boxplot(FlightData$FlightLength~FlightData$Delayed30)
+```{r}
+```
+
+# Chapter 2 QQ PLOTS----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+Spruce <- read.csv("https://sites.google.com/site/chiharahesterberg/data2/Spruce.csv")
+```
+
+Let's look at the data from the Spruce study. In particular, we'll look at the distribution of the Height after 5 years:
+
+```{r}
+summary(Spruce)
+hist(Spruce$Height5, freq=F)
+mean(Spruce$Height5)
+sd(Spruce$Height5)
+```
+
+One of the most common assumptions we will make about a population is that it is **normally distributed.**
+
+So, we need to know:
+
+1) What is a normal distribution.
+2) How do we know if a population is normally distributed?
+
+A normal distriubtion (for a continuous random variable) has a graph that looks like the one below.  It has two **parameters**: the mean and the standard deviation.
+
+Remember, a *pdf* is the function $f$ such that $$P(a\leq X \leq b)=\int_a^b f(t) \ dt.$$
+
+For a normal distribution $$f(x)=\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$ where $\mu$ is the mean, and $\sigma$ is the standard deviation.
+
+Below is a normal distribution with $\mu=4$ and $\sigma=2$:
+
+```{r}
+m=4
+s=2
+f <- dnorm(m,s)
+base <- ggplot(data.frame(x = c(m-3*s, m+3*s)), aes(x))
+base + stat_function(fun = dnorm, args=list(mean=m, sd=s))
+```
+
+Shown are both a histogram of the sample as well as the normal distribution with the same mean and standard deviation of the data.
+
+```{r}
+m=mean(Spruce$Height5)
+s=sd(Spruce$Height5)
+ggplot(data.frame(Spruce$Height5), aes(x = Spruce$Height5)) +
+  geom_histogram(bins=10, aes(y=..density..))+
+  stat_function(fun = dnorm,  args=list(mean=m, sd=s), color = "green")
+```
+
+The shapes of the histogram and of the normal distribution are fairly close.  It's probably fair to assume that the height of spruce trees is normally distributed.
+
+A tool, called **qqplots**, allows us to investigate this question a little better.
+
+We ask the following question: "What value, $q$, gives $P(X \leq q)=0.1$?  The answer is called a quantile.  Or, if converted to a percentage, a percentile.
+
+We compute these quantiles for various values: 0.1, 0.2, etc.  Call these answers $q_1, q_2, q_3, \dots$.
+
+We do this two ways:
+
+1) for the theoretical *standard* normal distribution, which has $\mu=0$ and $\sigma=1$.
+
+2) for the sample data
+
+
+From the *standard* normal distribution (theoretical)
+```{r}
+qnorm(.1)
+```
+
+That is, $P(X \leq -1.281552)=0.1$ is $X$ is a random variable with a standard normal distribution.
+
+Then we do the same thing for the data. How much of data lies in the first 10% of the data, the first 20% of the data, etc.  (The data isn't continuous so we won't do this calculation, we'll let R figure it out....)  Call these answers $x_1, x_2, x_3, \dots$
+
+Now, plot the points $(q_1, x_1), (q_2, x_2), \dots$.
+
+The  closer these points come to being on a straight line the more *normal* the distrubution.
+
+```{r}
+plot.new()
+qqnorm(Spruce$Height5)
+qqline(Spruce$Height5)
+```
+
+```{r}
+FlightData <-  read.csv("https://sites.google.com/site/chiharahesterberg/data2/FlightDelays.csv")
+#head(FlightData)
+```
+
+By way of comparison, let's look at a qqplot for delay times from the Flight Delay data set
+```{r}
+plot.new()
+qqnorm(FlightData$Delay)
+qqline(FlightData$Delay)
+```
+
+The plotted points deviate far from the line due to the fact that the data is skewed right.
+
+#Exercise 2.7-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+Spruce <- read.csv("https://sites.google.com/site/chiharahesterberg/data2/Spruce.csv")
+```
+
+Part a) Numeric Summaries
+
+```{r}
+summary(Spruce$Ht.change)
+```
+Part b)The distribution became more lighter (shorter) tails and this is approximately normal distribution because it skews a little more to the right according to the bar graph and the qq plot becoming less dense.
+```{r}
+qqnorm(Spruce$Ht.change)
+qqline(Spruce$Ht.change)
+hist(Spruce$Ht.change)
+```
+
+Part C) 
+```{r}
+boxplot(Spruce$Di.change~Spruce$Fertilizer)
+```
+Part D) 
+```{r}
+tapply(Spruce$Di.change,Spruce$Fertilizer,summary)
+tapply(Spruce$Di.change,Spruce$Fertilizer,sd)
+```
+Part E) 
+
+This scatter plots is positive, linear and a strong graph where it 
+shows that when the height increasingly changes, the diameter increasingly 
+changes.
+
+```{r}
+plot(Spruce$Ht.change,Spruce$Di.change,main="Scatter Plot")
+
+```
+
+# Chapter 2- Cumulative distribution functions and ecdf and scatter plots-----------------------
+
+Recall:
+
+A function $f$ such that $$P(X \leq x)=\int_{-\infty}^x f(t) \ dt$$ is the pdf (probability distribution function).
+
+The function $$F(x)=P(X \leq x)$$ itself is called the cummulative distribution function (cdf).  Notice $$F^\prime(x) = \text{pdf}(x)$$
+
+So, the pdf and cdf convey similar information. Sometimes it's convenient to look at the pdf, sometimes the cdf.
+
+The graph on the front cover of the book is a cdf. It show exactly the two things we're interested in.  The solid curve can be thought of as the theoretical cdf, while the dotted curve is the cdf determined from the sample data.  
+
+Since the cdf is defined as a probability, its values are always beteen 0 and 1.  Also, its graph always has the same shape.  Where and how steeply the graph goes from 0 to 1 changes.
+
+The horizontal axes of a cdf graph has units of the data (time, number of people, etc.), the vertical axes is probability/percentage.
+
+Let's look at an example.  We'll consider the birth weight of babies of smoking vs non-smoking mothers.
+
+```{r}
+BirthsData <- read.csv("Data/TXBirths2004.csv")
+```
+
+```{r}
+head(BirthsData)
+```
+
+First, we need to prepare the data:
+
+```{r}
+smoker <- subset(BirthsData, select=Weight, subset=Smoker=="Yes", drop=T)
+head(smoker)
+nonsmoker <- subset(BirthsData, select=Weight, subset=Smoker=="No", drop=T)
+head(nonsmoker)
+```
+
+First, let's look at the histogram (corresponds to pdf) for each group:
+
+```{r}
+hist(smoker, freq=F)
+hist(nonsmoker, freq=F)
+```
+
+Both are unimodal and roughly normal, but the nonsmoker distribution is skewed left.
+
+Now, let's look at the cdf for the sample data, this is called the **empircal cummulative distribution function** (ecdf)
+
+```{r}
+plot.new()
+plot.ecdf(smoker, col="red")
+plot.ecdf(nonsmoker, col="blue", add=TRUE)
+abline(v=3000)
+```
+
+$$F_n(x)=\frac{\text{number of values } \leq x}{\text{sample size}}$$
+
+Let's think about babies with a birth weight of 3000 grams or less. Roughly: 
+
+* about 20% of babies of non-smoking mothers had a birth weight of 3000 grams or less;  
+
+* about 40% of babies of smoking mothers had a birth weight of 3000 grams or less. 
+
+
+You can obtain the same information from the pdfs, but it's much easier to see here.
+
+* In cdfs the probability is on the vertical axes.  
+* In pdfs the probability is an area under the curve.
+
+(remember, be careful about making scientific conclusions: this is an observational study, not an experimental one)
+
+**Skewness and Kurtosis**
+
+*Skewness* and *Kurtosis* describe how far a distribution from being normal. 
+
+*Skewness* reflects how symmetric (or nonsymmetric) a distribution is. 
+
+* a positive number means skewed right
+* a negative number means skewed left
+* the farther the number is from zero, the more skewed it is
+
+*Kurtosis* reflects high peaks (higer than a normal distribution) and longer tails (again, as compared to a normal distribution)
+
+* For now, we'll content ourselves with: the farther the Kurtosis is from 0, the more "un" normal the distribution
+
+Before you run the chunk below you need to load the "moments" package.  Do this in the **console** window by running: install.packages("moments").
+
+(You'll probably only need to do this once on your laptop.)
+
+
+```{r}
+library(moments) 
+skewness(smoker)
+skewness(nonsmoker)
+kurtosis(smoker)
+kurtosis(nonsmoker)
+```
+
+So, the non-smoker distribution is more skewed (left) than the smoker distribution.  
+
+The nonsmoker distribution also has a shape further from normal than the smoker distribution.
+
+#Exercise 2.6-----------------------------------------------------------------------------
+
+
+Part A)
+```{r}
+library(resampledata)
+ data(Recidivism)
+ head(Recidivism)
+```
+```{r}
+table(Recidivism$Recid)
+barplot(table(Recidivism$Recid))
+```
+
+Part B) Contingency Table
+```{r}
+table(Recidivism$Recid,Recidivism$Age25)
+prop.table(table(Recidivism$Recid, Recidivism$Age25),2)
+```
+For those under the age of 25, 36% got sent back to prison and for those over the age of 25,30% got sent 
+back to prison.
+
+
+```{r}
+boxplot(Recidivism$Days~Recidivism$Offense)
+```
+
+The felony and misdemeanor offense both have a close median range at approximately 400 days and the spread is nearly the same between both boxplots.Also the interquartile approximately ranges in proximity to each other where the misdemeanor is interquartile range is slightly greater. 
+
+Part D) 
+```{r}
+quantile(Recidivism$Days,na.rm=TRUE)
+```
+
+```{r}
+Under25<- subset(Recidivism, select=Days, subset = Age25=="Under 25",drop=T)
+Over25<- subset(Recidivism, select=Days, subset= Age25=="Over 25",drop=T)
+plot.ecdf(Under25,col='red')
+plot.ecdf(Over25,col='blue',add=TRUE)
+```
+
+Approximately 50% of the prisoners under the age of 25 were sent back to prison after 400 days after release.
+Approximately 42% of the prisoners over the age of 25 were sent back to prison after 400 days after release. 
+
+
+```{r} 
+offenseM<- subset(Recidivism, select = Days, subset = Offense=="Misdemeanor", drop = T)
+offenseF<- subset(Recidivism, select = Days, subset = Offense=="Felony", drop = T)
+plot.ecdf(offenseF,col='red')
+plot.ecdf(offenseM,col='blue',add=TRUE)
+abline(v=300)
+```
+```{r}
+boxplot(Recidivism$Days~Recidivism$Race, na.rm=TRUE)
+```
+
+According to the boxplot,the two groups that appear to have similar distributions(median,mean and interquartile,lower fence,upper fence,spread) are the Black Non-Hispanic and the White Non-Hispanic.
+It might be true that the mean number of days to recidivism are statistically different for the American Indian 
+or Alaska Native-Hispanic because the spread, interquartile and the spread is different which will effect the mean.
+
+
+#Chapter 3 - Idea of Hypothesis Testing & Resampling--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Idea of hypothesis testing
+-----
+The example shows times it takes mice to run through a maze.  Does the data from this one iteration of the experiment provide evidence that the drug has an effect on ability to run through the maze quickly?  Or, could this data simply be a result of chance.  Eg. maybe, by chance, slow mice were in the group that received the drug while fast mice were in the control group.
+
+If we restrict our attention to these 6 times, here are all the ways three of the times could have been (but weren't) placed in the drug group:
+```{r}
+times=c(30, 25, 20, 18, 21, 22)
+druggroup <- combn(times,3)
+druggroup
+
+```
+
+Notice, the first column is the *observed* outcome. We'll find the mean time of this group as the *observed* mean time.
+
+```{r}
+druggroup[,1]
+mean(druggroup[,1])
+```
+
+In general if I choose $k$ items from $n$ total items there are "n choose k" ways to do this:
+
+```{r}
+choose(6,3)
+```
+
+
+Here are the corresponding times in the control group.  That is, once I choose 3 of the times for the drug group, the other three times would be in the control group (no drug).
+
+```{r}
+controlgroup <- matrix(data=0, nrow=3, ncol=choose(6,3))
+for (i in 1:20)
+  for (j in 1:3)
+    controlgroup[j,i]=setdiff(times, druggroup[,i])[j]
+controlgroup
+```
+
+We want to, for each possibility, one at a time, compare the mean time from the drug group to the mean time from the control group.
+
+The first column corresponds to the data from our experiment,  the average times are, and the difference is:
+```{r}
+
+druggroup[,1]
+mean(druggroup[,1])
+
+controlgroup[,1]
+#cat("mean time of control group", mean(controlgroup[,1]))
+
+mean(controlgroup[,1])
+
+mean(druggroup[,1])-mean(controlgroup[,1])
+```
+
+So in this case the drug group took longer (on average) to complete the maze than the control group.
+
+We want to compare the mean time of the drug group to the mean time of the control group for all the possibilities:
+
+```{r}
+colMeans(druggroup)-colMeans(controlgroup)
+```
+
+In how many of the possible groupings is the difference in mean times as extreme or more extreme than our actual experiment?
+
+The following code asks case by case whether the mean time to completion for any possibility is $\geq$ the mean time for completion of the observed selection.
+
+In R it's easy to count because R treats the "sum" of True and False values as 1 and 0 respectively. 
+
+```{r}
+colMeans(druggroup)-colMeans(controlgroup)>= mean(druggroup[,1])-mean(controlgroup[,1])
+
+sum(colMeans(druggroup)-colMeans(controlgroup)>= mean(druggroup[,1])-mean(controlgroup[,1]))
+```
+
+So the probability that chance would give a difference *at least as large* as our observed experiment is
+
+```{r}
+3/20
+```
+
+To conclude that the drug DID have an effect on times we'd want this outcome to be *very* unlikley.  While 0.15 is *small* it isn't usually considered small enough.  
+
+So, this difference of mean time is *not*  *statistically signficant*. We cannot conclude (statistically) that the drug has an effect of maze time.
+
+What is *small enough*?  Good question.  To some extent it depends on discipline.  Biologist, social scientists, etc. have different standards. Typical values are 0.01 or 0.05.
+
+
+#Chapter 3 - Idea of Hypothesis & Resampling -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-We want to test the validity of statement (â€œnull hypothesisâ€) about a parameter associated with a well-defined underlying population.
+
+-We also state clearly what situation will prevail if the hypothesis to be tested is not true. We call this the â€œalternative hypothesisâ€.
+
+-Then we take a carefully constructed sample from the population of interest. For example, we might use simple random sampling, so that all sample values are mutually independent of each other.
+
+-We combine the sample values into a single statistic. Usually, this would be a statistic that had already been found to be a â€œgoodâ€ estimator of the parameter under test. Typically, this estimator would have to be transformed (e.g., â€œstandardizedâ€) to make it â€œpivotalâ€ â€“ that is, having a sampling distribution that does not depend on any other unknown parameters.
+
+-Then, we ask â€“ â€œif in fact the null hypothesis were actually true, is the value of our test statistic â€œsurprisingâ€, or not?
+
+-If it is surprising, we would reject the null hypothesis. If not, we would not reject the null hypothesis. 
+
+##Ifthe p-value is SMALL, We can reject the null hypothesis.
+
+
+Idea of hypothesis testing
+-----
+The example shows times it takes mice to run through a maze.  Does the data from this one iteration of the experiment provide evidence that the drug has an effect on ability to run through the maze quickly?  Or, could this data simply be a result of chance.  Eg. maybe, by chance, slow mice were in the group that received the drug while fast mice were in the control group.
+
+If we restrict our attention to these 6 times, here are all the ways three of the times could have been (but weren't) placed in the drug group:
+```{r}
+times=c(30, 25, 20, 18, 21, 22)
+druggroup <- combn(times,3)
+druggroup
+
+```
+
+Notice, the first column is the *observed* outcome. We'll find the mean time of this group as the *observed* mean time.
+
+```{r}
+druggroup[,1]
+mean(druggroup[,1])
+```
+
+In general if I choose $k$ items from $n$ total items there are "n choose k" ways to do this:
+
+```{r}
+choose(6,3)
+```
+
+
+Here are the corresponding times in the control group.  That is, once I choose 3 of the times for the drug group, the other three times would be in the control group (no drug).
+
+```{r}
+controlgroup <- matrix(data=0, nrow=3, ncol=choose(6,3))
+for (i in 1:20)
+  for (j in 1:3)
+    controlgroup[j,i]=setdiff(times, druggroup[,i])[j]
+controlgroup
+```
+
+We want to, for each possibility, one at a time, compare the mean time from the drug group to the mean time from the control group.
+
+The first column corresponds to the data from our experiment,  the average times are, and the difference is:
+```{r}
+
+druggroup[,1]
+mean(druggroup[,1])
+
+controlgroup[,1]
+#cat("mean time of control group", mean(controlgroup[,1]))
+
+mean(controlgroup[,1])
+
+mean(druggroup[,1])-mean(controlgroup[,1])
+```
+
+So in this case the drug group took longer (on average) to complete the maze than the control group.
+
+We want to compare the mean time of the drug group to the mean time of the control group for all the possibilities:
+
+```{r}
+colMeans(druggroup)-colMeans(controlgroup)
+```
+
+In how many of the possible groupings is the difference in mean times as extreme or more extreme than our actual experiment?
+
+The following code asks case by case whether the mean time to completion for any possibility is $\geq$ the mean time for completion of the observed selection.
+
+In R it's easy to count because R treats the "sum" of True and False values as 1 and 0 respectively. 
+
+```{r}
+colMeans(druggroup)-colMeans(controlgroup)>= mean(druggroup[,1])-mean(controlgroup[,1])
+
+sum(colMeans(druggroup)-colMeans(controlgroup)>= mean(druggroup[,1])-mean(controlgroup[,1]))
+```
+
+So the probability that chance would give a difference *at least as large* as our observed experiment is
+
+```{r}
+3/20
+```
+
+To conclude that the drug DID have an effect on times we'd want this outcome to be *very* unlikley.  While 0.15 is *small* it isn't usually considered small enough.  
+
+So, this difference of mean time is *not*  *statistically signficant*. We cannot conclude (statistically) that the drug has an effect of maze time.
+
+What is *small enough*?  Good question.  To some extent it depends on discipline.  Biologist, social scientists, etc. have different standards. Typical values are 0.01 or 0.05. 
+
+
+#Chapter 3- Permutation Test with Resampling/ Exercise 3.5--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+```{r}
+library(resampledata)
+head(FlightDelays)
+
+
+Is the mean delay time between UA and AA statistically signficant?
+
+It's important to know how this process is set up:
+
+The *null hypothesis* is $$H_0: \mu_{UA}-\mu_{AA}=0.$$
+
+The *hypothesis test* looks for evidence to reject the null hypthesis in favor of the *alternative hypothesis*:
+
+$$H_A: \mu_{UA}-\mu_{AA}\neq 0.$$  
+
+This is a *two-sided* test as opposed to the mice example which was a *one sided* test.  We'll multiply the probabiliy we obtain in the end by 2.
+
+If, after our resampling process, the probability of obtaining an outcome as extreme or more extreme than the observed outcome is *small* then we have evidence in favor of the alternative hypothesis.
+
+If the probability is NOT small this **DOES NOT** mean that the null hypothesis is true.  It means there is not statistical evidence to support rejecting the null hypothesis.
+
+First, we'll compute the mean difference between the delays times for the observed data.
+
+```{r}
+#delays <- read.csv("Data/FlightDelays.csv")
+#delays
+
+delays <- FlightDelays
+head(delays)
+UAdelays <- subset(delays, select=Delay, subset=Carrier=="UA", drop=T)
+head(UAdelays)
+
+```{r}
+
+```
+
+# Chapter 3 -Permutation Test with Resampling/ Worked Exercise 3.9------------------------------------------------------------------------------------------------------------------------------------------------
+
+Hypothesis test statements:
+
+$$H_0: p_{May}-p_{June}=0$$
+
+$$H_A: p_{May}-p_{June}\neq 0$$
+
+Load the data. Create two subsets, one each for May and June.
+
+```{r}
+library(resampledata)
+delays <- FlightDelays
+Maydelays <- subset(delays, select=Delay, subset=Month=="May", drop=T)
+Junedelays <- subset(delays, select=Delay, subset=Month=="June", drop=T)
+
+```
+
+Look at the three vectors and their sizes to make sure they seem like the right thing.
+
+```{r}
+length(Maydelays)
+length(Junedelays)
+length(delays$Delay)
+```
+
+
+Create subsets of delays more than 20 minutes.  Again look at the vectors and their sizes to make sure they are the right thing.
+
+```{r}
+May20 <- subset(Maydelays, subset=Maydelays>20)
+length(May20)
+length(Maydelays)
+June20 <- subset(Junedelays, subset=Junedelays>20)
+#June20
+```
+
+Computation of proportions:
+
+```{r}
+length(May20)/length(Maydelays)
+length(June20)/length(Junedelays)
+```
+
+Or, another way to do this:
+
+Compute the proportion of delays more than 20 minutes in each month:
+```{r}
+PropMay <- (sum(Maydelays>20))/(length(Maydelays))
+PropMay
+PropJune <- (sum(Junedelays>20))/(length(Junedelays))
+PropJune
+```
+
+```{r}
+sum(Maydelays>20)
+```
+
+Look at the vectors that are in the lines of code above.  To see that they are the "right" thing and that I "count" them in the correct manner.
+
+Compute the *observed* difference in proportions:
+```{r}
+observed <- PropMay-PropJune
+observed
+```
+
+
+
+```{r}
+boxplot(delays$Delay~delays$Month)
+```
+
+Pool the data and record the size of 1) the pooled data, and 2) the size of the two groups:
+
+```{r}
+alldelays <- delays$Delay
+poolsize <- length(alldelays)
+poolsize
+GroupOneSize <- length(Maydelays)
+GroupOneSize
+GroupTwoSize <- length(Junedelays)
+GroupTwoSize
+```
+
+Run a resampling permutation test:
+
+
+```{r}
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(poolsize,size=GroupOneSize, replace=F)
+result[i] <- (sum(alldelays[index]>20)/GroupOneSize)-(sum(alldelays[-index]>20)/GroupTwoSize)
+} 
+
+```
+
+Look at results of the permutation test:
+
+```{r}
+hist(result)
+```
+
+
+Compute probability of an outcome at least as extreme as the observed outcome:
+
+```{r}
+2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+```
+
+
+At the 0.05 level we can conclude there is a significant differnce in the proportion of delays over 20 minutes in the months of May vs. June.
+
+At the 0.01 level we cannot make this conclusion.
+
+
+#Ch.3-Standard Deviation,Variance,Proportions --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+```{r}
+library(resampledata)
+head(FlightDelays)
+```
+
+Part A)
+
+Null Hypothesis two-sided test statement:
+
+$$H_A: \mu_{UA}-\mu_{AA}\neq 0.$$
+
+
+```{r}
+delays <- FlightDelays
+head(delays)
+UAdelays <- subset(delays, select=Delay, subset=Carrier=="UA", drop=T)
+#UAdelays
+head(delays)
+AAdelays <- subset(delays, select=Delay, subset=Carrier=="AA", drop=T)
+#AAdelays
+```
+
+United Airlines and American Airline delays more than 20 minutes.  
+
+```{r}
+UA20 <- subset(UAdelays, subset=UAdelays>20)
+length(UA20)
+length(UAdelays)
+#UA20
+AA20 <- subset(AAdelays, subset=AAdelays>20)
+length(AA20)
+length(AAdelays)
+#AA20
+```
+
+Computation of proportions: United Airlines and American Airlines
+
+```{r}
+propUA <-length(UA20)/length(UAdelays)
+propAA <-length(AA20)/length(AAdelays)
+observed <-propUA-propAA
+observed 
+```
+
+Pool the data of the two groups:
+
+```{r}
+alldelays <- delays$Delay
+#alldelays
+poolsize <- length(alldelays)
+#poolsize
+GroupUA <- length(UAdelays)
+#GroupUA
+GroupAA <- length(AAdelays)
+#GroupAA
+
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(poolsize,size=GroupUA, replace=F)
+result[i] <- (sum(alldelays[index]>20)/GroupUA)-(sum(alldelays[-index]>20)/GroupAA)
+} 
+
+```
+
+
+```{r}
+hist(result)
+```
+
+
+```{r}
+2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+```
+The difference of proportion is 0.04351791 which is a small value.The p-value is 0.0028 which is also small between the United Airlines and American Airlines flight delays and therefore the distance in proportion does not necessarily make a difference so we can reject the null hypothesis.
+
+
+PartB)
+
+
+```{r}
+var(UAdelays)
+var(AAdelays)
+observe2=var(UAdelays)/var(AAdelays)
+observe2
+```
+
+
+```{r}
+N <- 10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(poolsize,size=GroupUA, replace=F)
+result[i] <-var(alldelays[index])/var(alldelays[-index])
+}
+```
+
+```{r}
+hist(result)
+```
+
+
+```{r}
+2*min((sum(result >= observe2)+1)/(N+1),
+(sum(result <= observe2)+1)/(N+1))
+```
+The null hypothesis can not be rejected due to the p-value being 0.2862 which is a large number. There is a significant difference between United Airlines and American Airlines.
+
+
+# Chapter 4-Sampling Distribution---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+When we did a permutation test we resampled our sample data in order to generate a permutation distribution.  We looked at the observed statistic's (difference of means, difference of proportion, etc.) location in the distribution in order to determine whether or not the observed statsitic was *statistically signficant*.
+
+This is *one* way to determine a distribution. 
+
+The following illustrates the *idea* behind finding a distribution in a different way.  Keep in mind that what we're doing *illustates* the idea; it is not part of the test.
+
+The following data set contains finish times from the Chicago Marathon.  I don't know what subset of times this is. But, we are going to pretend this is the *population.*  That is, pretend it is *all* times, or even *all* marathon times. It would be difficult to collect *all* marathon times, but not difficult to sample marathon times. We could compute the mean time from our sample.  But, that raises the question if our sample was a *good* sample. Maybe the next sample produces a different mean time, etc.  
+
+Repeating this -  sample, and calculate the mean time - produces a *sampling distribution*.  This will be a distribution against which we can compare an oberserved statistic.
+
+
+Here is the data set:
+
+```{r}
+library(resampledata)
+head(ChiMarathonMen)
+```
+
+We're pretending, but just so we sort of know the setting:
+
+```{r}
+summary(ChiMarathonMen$FinishMin)
+```
+
+These are pretty fast times, but not world class fast.
+
+Here is the distribution of the *population*:
+
+```{r}
+hist(ChiMarathonMen$FinishMin)
+```
+
+Keep in mind, would probably couldn't *know* this for a population, but it's not too much of stretch that we'd assume something like this: there are only a few *really* fast time, then things are fairly *uniform*.
+
+We are going to choose a sample of 6 times, calculate the mean, store that result, repeat...
+
+Here is one pass of the simulation:
+
+
+```{r}
+mysample <- sample(ChiMarathonMen$FinishMin, size=6,replace=F)
+mean(mysample)
+```
+
+Here is the simulation:
+
+```{r}
+N=10^4
+Xbar <- numeric(N)
+for (i in 1:N)
+  {mysample <- sample(ChiMarathonMen$FinishMin, size=6,replace=F)
+  Xbar[i] <- mean(mysample)}
+```
+
+
+
+Here is the *sampling distribution*.  It is the sampling distribution of the mean of a sample of size 6.  This is often denoted $\overline{X}$.  $\overline{X}$ is the random variable.
+
+
+```{r}
+hist(Xbar)
+```
+
+The mean and standard deviation for the population - that is the *parameters* - are:
+
+```{r}
+mean(ChiMarathonMen$FinishMin)
+sd(ChiMarathonMen$FinishMin)
+```
+
+The mean and *standard error*  (the standard deviation of a sample is called the *standard error*) of the *sampling distribution* - that is the *statistics* - are:
+
+```{r}
+mean(Xbar)
+sd(Xbar)
+```
+
+Notice:
+
+* The two mean values are very close to one another.
+* The two standard deviations are not, but:
+
+```{r}
+sd(ChiMarathonMen$FinishMin)/sqrt(6)
+```
+
+is pretty close to the standard error.
+
+Let's try a different statistic. We'll let $X$ be the fastest time in a sample of 6 times:
+
+```{r}
+mysample <- sample(ChiMarathonMen$FinishMin, size=6,replace=F)
+min(mysample)
+```
+
+Again, we repeat this process many times:
+
+```{r}
+N=10^4
+Xmin <- numeric(N)
+for (i in 1:N)
+  {mysample <- sample(ChiMarathonMen$FinishMin, size=6,replace=F)
+  Xmin[i] <- min(mysample)}
+```
+
+Here is the sampling distribution for $X_{min}$:
+```{r}
+hist(Xmin)
+```
+
+The mean and standard deviation of the population are:
+
+```{r}
+mean(ChiMarathonMen$FinishMin)
+sd(ChiMarathonMen$FinishMin)
+```
+
+The mean and standard error of the sampling distribution are:
+
+```{r}
+mean(Xmin)
+sd(Xmin)
+```
+
+It's not so clear what (if anything) is happening here.  One point here is that the two statistics: sample mean vs sample min must be treated differently. 
+
+#Exercise 4.4/4.5-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Keep in mind the data they give you is meant to be the population.
+
+For the dot plot:
+you can use stripchart(pop, method="stack", at=0) to create a not very nice dot plot, or
+make a histogram with bin widths of 1 (see Rmd titled Chapter_2_Plots for an example of setting the width(the book probably used ggplots for their nice plots, let's not worry about that right now)
+
+The code presented in the book suggests replace=TRUE.  This is fine. You might try both True and False and see what the difference is. 
+Using mean( Xbar < 11)   computes the probability.  It is counting the number of times XÂ¯Â¯Â¯Â¯<11 and dividing by the total sample size.  Make sure the draw the connection between the value you obtain and the histogram of Xbar.
+
+
+
+Part a) Compute the mean and standard deviation and create a dot plot of its distribution.
+```{r cars}
+pop<- c(3,5,6,6,8,11,13,15,19,20)
+summary(pop)
+popmean<-mean(pop)
+popstdev<-sd(pop)
+stripchart(pop,method = "stack",at=0)
+```
+
+Part b) Simulate the sampling distribution of Xbar by taking random samples of size 4 and plot your results. Compute the mean and standard error, and compare to the population mean and standard deviation. 
+
+
+```{r}
+randomsample <- sample(pop, size=4,replace=F)
+samplemean<-mean(randomsample)
+standarddev<-sd(randomsample)
+```
+
+Simulation:
+```{r}
+N=10^4
+Xbar <- numeric(N)
+for (i in 1:N)
+  {randomsample <- sample(pop, size=4,replace=F)
+  Xbar[i] <- mean(randomsample)}
+```
+
+```{r}
+hist(Xbar)
+```
+
+Compute mean and standard deviation with error(Xbar): Population & Random Sample
+```{r}
+popmean
+mean(Xbar)
+
+popstdev
+sd(Xbar) 
+```
+The mean of the population and the error mean of the random sampling are in close range of each other but the standard deviations with the error standard deviation are not consider in a close range of one another. 
+
+
+Part c) Use the simulation to find P(Xbar<11).
+
+Computes probability
+```{r}
+mean(Xbar<11)
+```
+
+
+# Presentation about Binomial Distribution------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+According to the CDC the positivity rate for coronavirus in La Plata county on Wednesday, 24-Feb was $2.15\%$.  Suppose 15 people test on Friday.  Let $X$ be a discrete random variable that is the number of people (of those 15) who test positive.  We can ask questions like:
+
+* What is the probability that 2 (exactly) people test positive? $$P(X=2)$$
+
+* What is the probability that 3 or fewer people test postive? $$P(X \leq 3)$$.
+
+The probability that one person tests positive is 
+
+```{r}
+postest <- 0.0215
+```
+
+We are making two very important assumptions:
+
+* The probability for each person who tests is the **same**.
+* Each person's test is **independent** of other tests.
+
+The probabilty that one person test negative is
+```{r}
+negtest <- 1-postest
+```
+
+There are many ways 2 people could test positive:
+
+* the first two test postive, the remaining 13 negative
+* the first and third test positive, the remainig 13 negative
+* etc.
+* How many different combinations are there?  $$15 \choose 2:$$
+
+```{r}
+choose(15, 2)
+```
+
+Every one of these ways has a probability of $$(0.0215)^2 \cdot (1-0.0215)^{13}$$ of happening. So, the probability of exactly two people out of 15 testing positive is:
+
+```{r}
+choose(15, 2)*(postest)^2*(negtest)^13
+```
+
+The random variable for this situation has a *binomial distribution*.
+
+Remember, this is a discrete random variable, not a continuous random variable.
+
+The usual language for binomial distributions is that one possibility (testing positive) is called a *success*, the other possibility (testing negative) is called a *failure*.  There are only *2 options*.  Other examples: it rains today (or not),  passing a statistics exam (or not), etc.
+
+Here is the binomial distribution for this random variable:
+
+
+(It's maybe a little easier to see with `type='b'`, just remember the random variable is discrete.)
+
+```{r}
+plot(dbinom(0:15, 15, postest), type='h')
+```
+
+
+I found a better way to plot:
+
+```{r}
+barplot(dbinom(0:15, 15, postest), names.arg=0:15)
+```
+
+
+For different probablities of success we obtain different shaped distributions:
+
+```{r}
+plot(dbinom(1:15, 15, .2), type='b')
+```
+
+The probability that 3 or fewer people test positive (so 0, 1, 2, or 3 people test positive) is:
+
+
+
+$${15\choose 0} s^0 f^{15}+ {15 \choose 1} s^1 f^{14}+ {15\choose 2} s^2 f^{13}+ {15 \choose 3} s^3 f^{12}$$
+Where $s$ is the probability of "success" and $f$ is the probability of "failure."
+
+```{r}
+choose(15,0)*postest^0*negtest^15+choose(15,1)*postest^1*negtest^14+choose(15,2)*postest^2*negtest^13+choose(15, 3)*postest^3*negtest^12
+```
+There are 4 basic R-functions associated with a distribution. 
+
+* d-*dist* we saw above when we plotted the distribution.  It is the *pdf*
+* p-*dist* which computes the area in the lower tail, i.e. $P(X \leq x)$. It is the *cdf*. Be *very* careful - the $\leq$ makes a difference!
+* q-*dist* which computes the value $q$ such that $P(X \leq q)= \text{ the prob. you send}$
+* r-*dist* which generates a random sample from the given distribution.  This is useful for running simulations.
+
+The calls for different distributions are each a bit different depending on the parameters the distribution takes.
+
+Here is the computation we did above:
+
+```{r}
+pbinom(3,15,postest)
+```
+
+This particular example isn't great for illustrating `qbinom`...we'll come back to it. 
+
+But `qbinom` is the inverse of `pbinom`: you give it a probability, $p$, and it gives you back (in this case) the number of positive tests you'll have with probability $p$.
+
+
+
+Finally, if we want to generate a random sample from this distribution:
+
+```{r}
+rbinom(100, 15, postest)
+```
+
+If you plot these data in a histogram - you have a *sampling distribution* from a binomials distributed population.
+
+
+#Exercise 4.14 Another--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Answer the probability question.  You need to think about the area under the distribution.  I suggest you use pbinom, but remember it give the area under the lower tail.  It is crucial that you remember: pbinom(q)=P(Xâ‰¤q).  Think carefully about the â€œless than or equalâ€  in: P(Xâ‰¤q) 
+ignore the part about the CLT for now
+Plot the distribution.
+
+
+```{r}
+Diploma <- 0.286
+NoDiploma<- 1-Diploma
+```
+
+```{r}
+prob <-pbinom(230,800,Diploma)- pbinom(219,800,Diploma)
+prob
+```
+
+```{r}
+plot(dbinom(0:800, 800, Diploma), type='b')
+```
+
+
+According the distribution plot, the probability distribution is about 32% when the probability index ranges between 220 and 230 of U.S population who have high school diplomas.
+
+
+Additional Problem: Greater Chance of Success
+
+Occurrence #1: Six fair dice are tossed and at least one 6 appears.
+```{r}
+onesix<-(1/6)
+one<-pbinom(0,6,onesix)
+1-one
+```
+Plot 1: 
+```{r}
+plot(dbinom(0:6,6,one),type='b')
+```
+
+
+Occurrence #2: Twelve fair dice are tossed and at least two 6's appear.
+
+```{r}
+twosix<-(2/12)
+two<-pbinom(1,12,twosix)
+1-two
+```
+Plot 2: 
+
+```{r}
+plot(dbinom(0:12,12,two),type='b')
+```
+
+
+Occurrence #3: Eighteen fair dice are tossed and at least three 6's appear.
+```{r}
+threesix<-(3/18)
+three<-pbinom(2,18,threesix)
+1-three
+```
+
+Plot 3: 
+
+```{r}
+plot(dbinom(0:18,18,three),type='b')
+```

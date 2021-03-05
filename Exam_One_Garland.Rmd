@@ -1,0 +1,392 @@
+---
+title: "Exam_One_A"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+# Terminology
+1. What is the difference between a *population* and a *sample*?
+
+Answer: 
+
+
+2. What is the difference between a *statistic* and a *parameter*.  Give an example of a *statistic*.
+
+Answer:
+
+
+3. In a data set, what is the difference between an *observation* and a *variable*?
+
+Answer:
+
+
+
+# Exploratory Data Analysis
+
+Use one of the following two chunks to load the data set `Alelager`.
+
+If you have the `resampledata` package installed use:
+
+```{r}
+library(resampledata)
+BeerData<-Alelager
+head(BeerData)
+```
+
+**or**, you can use:
+
+```{r}
+BeerData<-read.csv("https://sites.google.com/site/chiharahesterberg/data2/Alelager.csv")
+head(BeerData)
+```
+
+1. Create side-by-side box plots of the alcohol content, grouped by beer type. Comment on the information the box plots convey.
+
+```{r}
+
+```
+
+Commentary: 
+
+
+2. Create a histogram of the calorie content of all beers in the data set. Describe the distribution.
+```{r}
+
+```
+
+Description of distribution:
+
+3.  Sampling Distribution
+*	Simulate the sampling distribution of the mean of the number of calories, for samples of size 3.
+		
+```{r}
+
+```
+
+
+
+*	Create a histogram and describe the simulated sampling distribution.
+		
+```{r}
+
+```
+
+
+Description of sampling distribution:		
+		
+*	Use the simulation to find the probability that the average calorie content of 3 beers is less than 150 calories.
+		
+```{r}
+```
+		
+* Use the simulation to find the probability that the average calorie content of 3 beers is more than 160 calories.
+  
+```{r}
+```
+  
+  
+4. The following code generates two ecdfs, one for calories of ales, one for calories of lagers. 
+ 
+```{r}
+Ales <- subset(BeerData, select=Calories, subset=Type=="Ale", drop=T)
+Lagers <- subset(BeerData, select=Calories, subset=Type=="Lager", drop=T)
+#plot.new()
+plot.ecdf(Ales, col="red")
+plot.ecdf(Lagers, col="blue", add=TRUE)
+abline(v=165)
+```
+
+What percentage of ales in the data set have less than 165 calories? 
+
+What percentage of lagers in the data set have less than 165 calories?
+
+
+# Permutation test
+
+Conduct a permutation test to determine whether there is a difference in the mean calorie content between ales and lagers. Your test should start with a statement of the formal hypotheses and finish with a conclusion.
+
+Put each step in its own chunk and **clearly explain what each chunk is doing and what information the output provides.**
+
+```{r}
+
+```
+
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+(I put in several r-chunks.  You might use more, you might use fewer.)
+
+
+# Critical reading
+
+Below, I conduct a permutation test to test whether there was, on average, a difference in the annual snow fall in Colorado in the years 2019 and 2020.  Identify the mistake and fix it.
+
+First, we load and briefly inspect the data:
+```{r}
+SnowData <- read.csv("https://www.dropbox.com/s/h8lkjdqoqui3bzw/TestDownload2.csv?dl=1")
+head(SnowData)
+```
+
+The data shows annual snow fall recorded at 51 NOAA weather station in Colorado in 2019, and 2020. 
+
+
+The formal statements of the hypotheses are:
+
+$$H_0: \mu_{d_{2020}-d_{2019}}=0$$
+
+$$H_A: \mu_{d_{2020}-d_{2019}}\neq 0$$
+
+where $d_{2020}-d_{2019}$ represents the difference in snow fall by station. 
+
+We'll compute the difference in snowfall at each station and compute the observed mean of differences:
+
+```{r}
+DiffAtStations<-SnowData$Snow2020-SnowData$Snow2019
+Observed<-mean(DiffAtStations)
+Observed
+```
+
+Next, we'll pool the data in order to find a permutation distribution:
+
+```{r}
+PooledData<- c(SnowData$Snow2020, SnowData$Snow2019)
+```
+
+Here is the loop that generates a permutation distribution:
+
+
+```{r}
+N=10^4
+SampleDist<-numeric(N)
+for (i in 1:N)
+{index<-sample(102,51, replace=F)
+SampleDist[i]<- mean(PooledData[index]-PooledData[-index])}
+```
+
+
+
+Finally, we compute the $p$-value for our observed statistic:
+
+```{r}
+2*min((sum(SampleDist >= Observed)+1)/(N+1),
+(sum(SampleDist <= Observed)+1)/(N+1))
+```
+
+Since the $p$-value is small we reject the null hypothesis and conclude that the mean difference in snow depth between 2019 and 2020 was different.
+
+
+
+
+
+**Your notes are below.  Do NOT delete the following chunk or your file may not knit.
+```{r}
+knitr::knit_exit()
+```
+
+
+
+Terminology:
+
+Observation: The rows of the data sets. The thing or number that has been observed.
+Variable: The columns of a data set, some characteristic that is obtained from each observation.
+Population: All the individual cases.
+(Random) Sample: A sample of independent and identically distributed observations from the population.
+Numeric Variable: A data variable that take on any value within a finite of infinite interval. 
+Factor Variable: Categorical variable that can be either numeric or string variables.
+Random variable:a variable whose value is unknown or a function that assigns values to each of an experiment's outcomes.
+Independent and Identically Distributed:
+Sampling with Replacement:Draw an observation from the population and then placing that observation back in the population.
+Sampling without Replacement: Drawing an observation for a population and not placing it back in the population. 
+Parameter: A numerical characteristic of a population of of a probability distribution.
+Statistic: A numerical characteristic of data. 
+Statistical Inference: Drawing a conclusion about a population based on information about a sample.
+Observations Study: A study in which researchers observe participants but do not influence the outcome.
+Experiment(al Study):Researcher manipulate the environment in some way to observe the respince of the objects of interest.  
+
+
+Uploading Data:
+```{r}
+#Name <- read.csv("https://sites.google.com/site/chiharahesterberg/data2/FlightDelays.csv")
+  #Will have to change the name of the data set that is being read the to the CSV file
+```
+
+Basic Commands:
+```{r}
+#table(Name)
+  #Creates a table of the data set
+#table(Name$Delays)
+  #Creates a table of the specified set of data from the data set
+#prop.table(table(FlightData$Day, FlightData$Delayed30),1)
+  #Creates a proportion table of the specified data. 1 computes rows, 2 computes columns
+#barplot(table(name))
+  #Creates a bar plot from the specified table
+#boxplot(FlightData$FlightLength~FlightData$Delayed30)
+  #Creates a box plot of the specified data
+#hist(Name)
+#width = seq(0,20, by=1)
+  # How to set teh width on a histogram
+  #Creates a histogram of the specified data
+
+```
+
+Creating Subsets:
+```{r}
+#Smoker <- subset(BirthsData, select=Weight, subset=Smoker=="Yes", drop=T)
+  #Can specify what type of data is included in by manipulating the names
+```
+
+ECDF Plot (Empirical Cumulative Distrabution Function):
+```{r}
+#plot.new()
+#plot.ecdf(Smoker, col="red")
+#plot.ecdf(nonsmoker, col="blue", add=TRUE)
+#abline(v=3000)
+```
+
+Permutation Testing:
+```{r}
+#delays <- FlightDelays
+#head(delays)
+
+#UAdelays <- subset(delays, select=Delay, subset=Carrier=="UA", drop=T)
+
+#AAdelays <- subset(delays, select=Delay, subset=Carrier=="AA", drop=T)
+
+#observed <- mean(UAdelays)-mean(AAdelays)
+#observed
+  #Create subsets from the original data that are going to be compaired
+
+#length(UAdelays)
+#length(AAdelays)
+#length(UAdelays)+length(AAdelays)
+  # Check to make sure that the numbers make sense.
+
+#AllDelays <- FlightDelays$Delay
+#poolsize <- length(AllDelays)
+#poolsize
+
+#GroupOneSize <- length(UAD)
+#GroupOneSize
+
+#GroupTwoSize <- length(AAD)
+#GroupTwoSize
+  #Set the group sizes for the resampling
+
+#N <- 10^6-1
+#Result <- numeric(N)
+#for (i in 1:N)
+#{index <- sample(poolsize, size=GroupOneSize, replace=F)
+#Result[i] <- (sum(AllDelays[index]>20)/GroupOneSize)-(sum(AllDelays[-index]>20)/GroupTwoSize)}
+  # Run the re-sampling loop
+
+#hist(Result)
+#2*min((sum(Result >= Observed)+1)/(N+1),sum(Result <= Observed)+1/(N+1))
+  #Check the results and find the P-value
+  #Less than 0.05 is statically significant results
+```
+
+Matched Pairs:
+```{r}
+#DiffInPairs <- Groceries$Target-Groceries$Walmart
+#DiffInPairs
+  #Find the differance in pairs
+
+#Observed <- mean(DiffInPairs)
+#Observed
+  #Find the observation
+
+#summary(DiffInPairs)
+#sd(DiffInPairs)
+  #find the statics summery for the data
+
+#Poolsize <- length(Groceries$Product)
+#Poolsize
+  #Find the pool size
+
+#sample(c(-1,1),Poolsize, replace=T)
+  #Sample the data
+
+#N <- 10^6-1
+#Result <-numeric(N)
+#for (i in 1:N)
+#{Sign <- sample(c(-1,1),Poolsize, replace=T)
+  #Diff <- Sign*DiffInPairs
+#Result[i] <- mean(Diff)
+#}
+  #Run the test for the data
+
+#hist(Result)
+#2*min((sum(Result >= Observed)+1)/(N+1),(sum(Result <= Observed)+1)/(N+1))
+  #Check the results and calculate the P-value
+```
+
+Distributions:
+```{r}
+#N <- 10^5
+#Xbar <- numeric(N)
+#for(i in 1:N)
+#{Sample <- sample(Pop,4,replace=TRUE)
+ #Xbar[i] <- mean(Sample)}
+    #The loop for creating a smapleing distrabution
+
+#HSD1 <- pbinom(220,800,HSD)
+  #Use one less than given number so not to cut one out.
+
+#barplot(dbinom(0:800, 800, success))
+  #For plotting the distrabution
+```
+
+Other Distrabutions:
+```{r}
+#Geometric Distrabution
+  #dgeom(3, basketsuccess)
+  #barplot(dgeom(0:20, basketsuccess),names)
+
+#Exponential
+  #pexp(1/2, 3)
+  #qexp(.9,3)
+
+#Uniform distribution
+  #library(ggfortify)
+  #ggdistribution(dunif, seq(-3, 23, 0.1), min=2, max=13)
+
+  #punif(10, 2, 13)
+  #qunif(.7, 2, 13)
+
+```
+
+
+
+
+
+
+
