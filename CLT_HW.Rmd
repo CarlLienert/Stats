@@ -1,0 +1,45 @@
+---
+title: "CLT_HW"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercise 4.10
+```{r}
+mu <- 48
+sigma <- 9
+1-pnorm(51, mean=mu, sd=sigma/sqrt(30))
+```
+
+## Exercise 4.12
+```{r}
+mu <- 6
+sigma <- sqrt(10)
+pnorm(4.6, mean=mu, sd=sigma/sqrt(20))
+```
+
+## Exercise 4.14
+```{r}
+n <- 800
+#n
+diploma <- 0.286
+#diploma
+mu <- diploma
+#mu
+sigma <- sqrt(diploma*(1-diploma)/n)
+#sigma
+a <- pnorm(230/n, mean=mu, sd=sigma)-pnorm(220/n, mean=mu, sd=sigma)
+b <- pnorm(230.5/n, mean=mu, sd=sigma)-pnorm(219.5/n, mean=mu, sd=sigma)
+a
+b
+
+```
+
+```{r}
+pbinom(230,800, diploma)-pbinom(219, 800, diploma)
+```
+
+

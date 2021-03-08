@@ -1,0 +1,104 @@
+---
+title: "CLT"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Central Limit Theorem
+
+We’ve seen several times that a sampling distribution of the mean of a sample from any distribution is normal. 
+
+If we take a sample of size $n$: $$X_1, X_2, X_3, \dots, X_n$$ from a distribution with mean $\mu$ and standard deviation $\sigma$, the sampling distribution of $\overline{X}$ is approximately normal with mean $\mu$ and standard deviation $\frac{\sigma}{\sqrt{n}}$.
+
+*Assumptions:*
+
+* $n$ is *sufficiently* large
+* The $X_i$ are independent
+* The $X_i$ come from the same distribution
+
+
+This provides another way to generate a distribution against which to compare an observed statistic and ask whether the observation is sufficiently unlikely to conclude that it is significant.
+
+## Example
+
+Suppose I know that the average marathon time in 2019 was 240 minutes and times had a standard deviation of 30 minutes. What is the probability that a randomly selected group of 6 marathon runners have an average time of no more than 180 minutes?  We want to compute $$P(\overline{T} \leq 180).$$ The sampling distribution of $\overline{T}$ is approximately normal with mean 240 and standard deviation $\frac{30}{\sqrt{6}}$.  We answer the question with:
+
+```{r}
+pnorm(180, mean=240, sd=30/sqrt(6))
+```
+
+This answer is the area under the curve below to the left of 180.
+
+```{r}
+library(ggfortify)
+ggdistribution(dnorm, seq(120, 360, 0.1), mean=240, sd=30/sqrt(6))
+```
+
+
+# Application of CLT to binomial random variables. 
+
+## Example
+
+17% of people in Colorado have received the vaccine against coronavirus. In a room of 60 people what is the probability that between 5 and 10 people have been vaccinated?
+
+The thing to notice here is that a normal distribution is continuous while a binomial distribution is discrete.
+
+It is common practice however to apply the CLT to this situation if $np$ and $n(p-1)$ are both large, say greater than 10.
+
+In this case, the *proportion* (not mean) is approximately 	normally distributed with a mean of $p$ and a standard deviation of $\sqrt{\frac{p(1-p)}{n}}$. Here $p$ is the probability of success.
+
+First, we check the *sufficiently large* conditions:
+
+```{r}
+p<-.17
+n=60
+n*p
+n*(1-p)	
+```
+Both are larger than 10, so we proceed. 
+
+So, we’ll answer the question using the CLT and a normal distribution.  We want to compute $P(\frac{5}{60} \leq V \leq \frac{10}{30})$.  Notice, we have to answer the question as a proportion (not as a count).  
+
+(The book also provides the mean and standard deviation for counts, you just have to make sure everything is consistent - counts or proportions, but not a mix.)
+
+We’ll answer the question by finding the area under the pdf of normal distribution with mean $\mu=p$ and standard deviation $\sigma=\sqrt{\frac{p\cdot (1-p)}{n}}$.
+
+```{r}
+n<-60
+p<-0.17
+mu<-p
+sigma<-sqrt(p*(1-p)/n)
+pnorm(10/n, mean=mu, sd=sigma)-pnorm(5/n, mean=mu, sd=sigma)
+```
+The following is the discrete distribution.  Imagine the continuous normal distribution superimposed. The continuous approximation, perhaps, doesn't compute the *right* area.
+
+```{r}
+barplot(dbinom(0:25, 60,p),names.arg=0:25)
+```
+
+
+
+
+
+
+We will try to improve our estimation of the probability by using a *continuity correction*. The idea is that since $C$ is a **discrete** random variable $$P(C <4)=P(C\leq 5)$$
+We will instead use the normal distribution approximation to compute $$P(4.5 \leq C \leq 10.5)$$
+
+```{r}
+pnorm(10.5/n, mean=mu, sd=sigma)-pnorm(4.5/n, mean=mu, sd=sigma)
+```
+
+The authors make an interesting comment about this technique of estimating a binomial distribution with a normal distribution via the central limit theorem:
+
+"For binomial data, the common rule of thumb is to use the CLT, with continuity correction, if both $np \geq 10$ and $n(1-p)\geq 10$. This rule is wishful thinking, dating to a precomputer age when one had few realistic alternatives to using the CLT because most other methods were computationally infeasible.  We can obtain better approximations using simulation-based methods, including permutation test and bootstrapping. ... And for binomial distributions we can do exact calculations."
+
+Here is the exact calculation:
+
+
+```{r}
+pbinom(10, 60, p)-pbinom(4, 60, p)
+```
+
