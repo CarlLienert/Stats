@@ -1,0 +1,106 @@
+---
+title: "Exercise_5_9"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Consider a population that has gamma distribution with parameters $r=5$ and $\lambda=\frac{1}{4}$:
+
+```{r}
+library(ggfortify)
+r <- 5
+lambda <- 1/4
+ggdistribution(dgamma, seq(0, 80, 0.01), shape=r, rate=lambda)
+```
+
+a) First we generate a *sampling distribution*:
+
+```{r}
+N<-10^4
+n<-200
+sampdist<- numeric(N)
+for (i in 1:N)
+{samp<- rgamma(n, shape=r, rate=lambda)
+sampdist[i]<-mean(samp)}
+```
+
+Here is the plot:
+
+```{r}
+hist(sampdist)
+```
+
+We find the mean and standard deviation of the sampling distribution:
+
+```{r}
+mean(sampdist)
+sd(sampdist)
+```
+
+
+## Bootstrap process:
+
+b) First draw a base sample:
+
+```{r}
+BaseSamp<-rgamma(n, shape=r, rate=lambda)
+```
+
+Its distribution:
+
+```{r}
+hist(BaseSamp)
+```
+
+which is skewed right.
+
+The mean and standard deviation of this *one* sample is:
+
+```{r}
+mean(BaseSamp)
+sd(BaseSamp)
+```
+
+c) Now we bootstrap:
+
+```{r}
+N=1000
+BootDist <- numeric(N)
+for (i in 1:N)
+{samp <- sample(BaseSamp, n, replace=T)
+BootDist[i] <- mean(samp)}
+```
+
+Here is the plot of the bootstrap distribution:
+
+```{r}
+hist(BootDist)
+```
+
+Here are the mean and standard deviation of the bootstrap distribution:
+
+```{r}
+mean(BootDist)
+sd(BootDist)
+```
+Here are the mean and standard deviation of the sample distribution:
+
+```{r}
+mean(sampdist)
+sd(sampdist)
+```
+
+
+
+
+```{r}
+Distribution <- c("Population", "Sample Distribution", "Sample", "Bootstrap Distribution")
+means <- c(r/lambda, mean(sampdist), mean(BaseSamp), mean(BootDist))
+sdevs <- c(sqrt(r)/lambda, sd(sampdist), sd(BaseSamp),sd(BootDist))
+results <- cbind(Distribution, means, sdevs)
+knitr::kable(results, digits=2)
+```
+

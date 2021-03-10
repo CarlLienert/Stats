@@ -1,0 +1,170 @@
+---
+title: "Bootstrap"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## An review of Sampling Distributions (how and why):
+
+1. Start with a *known* population. That is, I know something about its distribution.
+2. Generate a *sampling distribution* for some statistic (mean, max, proportion, etc.):
+	a. Pull a random sample
+	b. Compute a statistic (mean, max, etc.) of that sample.
+	c. Record that value
+	d. Repeat
+	e. The collection of these sample statistics *is* the sample distribution.
+8. Use the sampling distribution to compute probabilities:
+	* Eg. What is the probability that the mean of a sample is ____?
+
+## The problem: We *don’t know* the population.
+
+## The *bootstrap* solution: 
+
+* Use a sample *in place of* the population, 
+* generate a *bootstrap* distribution from this sample (we’ll get there)
+* Ask: Can I use the bootstrap distribution in the same way I’d use a (theoretical) sampling distribution?
+* If not, what can I do with it?
+
+
+
+
+## How to contruct a *bootstrap* distribution and comparison to sampling distribution
+
+In order to do the comparison part we'll start with a *known* distribution.  
+
+Keep in mind this is the part we can't do in practice.  We do it here to see if a bootstrap distribution is of any value.
+
+### Known distribution:
+
+normal with mean $\mu=36$ and standard deviation $\sigma = 8$.
+
+Here is the distribution:
+
+```{r}
+library(ggfortify)
+mu <- 36
+sigma <- 8
+ggdistribution(dnorm, seq(0, 72, 0.1), mean=mu, sd=sigma)
+```
+
+We know from the CLT that the sampling distribution of the mean for samples of size $n=200$ is *normal*, has mean $\mu=36$, and standard error $\text{S.E.}=\frac{\sigma}{\sqrt{n}}$.  Here is its plot:
+
+```{r}
+n <- 200
+ggdistribution(dnorm, seq(0, 72, 0.1), mean=mu, sd=sigma/sqrt(n))
+```
+
+
+This is the *theoretical* sampling distribution. Theoretical in the sense that we started with a *known* population.
+
+### Bootstrap method
+
+* We'll start by drawing a random sample of size $n=200$ (same size as in the sampling distribution) from the population:
+
+```{r}
+BaseSample <- rnorm(n, mean=mu, sd=sigma)
+```
+
+Look at it so you know what it is:
+
+```{r}
+head(BaseSample)
+```
+
+It is a vector of number chosen randomly from the population distribution.
+
+* Now, in the bootstrap procedure we are going to treat `BaseSample` as the population.  From here until the end pretend we *don't know* the population.
+
+* We are going to resample and compute the mean of each resample, just as we would to find a sampling distribution, but:
+
+  * We are going to pick resamples of size 200!  The same size as `BaseSample`.
+  * This only makes sense if we allow replacement: `replace=T`.  Otherwise we simply get the same sample over and over.
+  
+  
+  
+* We repeat, say 1000 times.
+* the result is the *bootstrap distribution*:
+
+```{r}
+N <- 1000
+BootDist <- numeric(N)
+for (i in 1:N)
+{samp <- sample(BaseSample, n, replace=T)
+BootDist[i] <- mean(samp)}
+```
+
+Look at it to see what you've created:
+
+```{r}
+head(BootDist)
+```
+
+This is a vector whose entries are means of each of the resamples. There are 1000 entries in this vector.
+
+Look at the graphical representation of this distribution:
+
+```{r}
+hist(BootDist)
+```
+
+We'll plot the *sampling distribution* on a similar scale:
+
+```{r}
+ggdistribution(dnorm, seq(34, 40, 0.1), mean=mu, sd=sigma/sqrt(n))
+```
+
+* These two distributions:
+
+  * have a similar shape - namely normal
+  * have a similar spread - most of the values are within a range of about 4
+  * do not have the same center: the theoretical sampling distribution is centered at 36, the bootstrap distribution is centered, maybe, at 36.5
+
+* Let's do this precisely:
+
+  * We *know* the mean of the sampling distribution is 36
+  * We *know* the standard deviation of the sampling distribution is:
+```{r}
+sigma/sqrt(n)
+```
+  
+  * The mean of the bootstrap distribution is:
+```{r}
+mean(BootDist)
+```
+
+(depending on my knit this value may be close to 36, but not always)
+  
+  * The standard deviation of the bootstrap distribution is:
+```{r}
+sd(BootDist)
+```
+
+One more comparison:
+
+```{r}
+mean(BaseSample)
+```
+
+The HW asks for a table.  Here is quick and dirty way to make a table:
+
+```{r}
+Distribution <- c("Population", "Sample Distribution", "Sample", "Bootstrap Distribution")
+means <- c(mu, mu, mean(BaseSample), mean(BootDist))
+sdevs <- c(sigma, sigma/sqrt(n), sd(BaseSample),sd(BootDist))
+results <- cbind(Distribution, means, sdevs)
+knitr::kable(results, digits=2)
+```
+
+
+So, the mean of the bootstrap distribuion is similar to the mean of `BaseSample`.  This is not unexpected, it also isn't particularly useful.  We want to say something about the mean of *real* popultion, not the mean of the sample.
+
+We'll keep this in mind: 
+
+* Bootstraping does a good job giving the *shape* of the sampling distribution.
+* Bootstraping does a good job giving the *spread* of the sampling distribution.
+* Bootstraping does *not* do a good job giving the *center* of the sampling distribuiton.
+
+We'll see how to use this next....
