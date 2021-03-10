@@ -74,7 +74,7 @@ Look at it so you know what it is:
 head(BaseSample)
 ```
 
-It is a vector of number chosen randomly from the population distribution.
+It is a vector of numbers chosen randomly from the population distribution.
 
 * Now, in the bootstrap procedure we are going to treat `BaseSample` as the population.  From here until the end pretend we *don't know* the population.
 
@@ -148,15 +148,6 @@ One more comparison:
 mean(BaseSample)
 ```
 
-The HW asks for a table.  Here is quick and dirty way to make a table:
-
-```{r}
-Distribution <- c("Population", "Sample Distribution", "Sample", "Bootstrap Distribution")
-means <- c(mu, mu, mean(BaseSample), mean(BootDist))
-sdevs <- c(sigma, sigma/sqrt(n), sd(BaseSample),sd(BootDist))
-results <- cbind(Distribution, means, sdevs)
-knitr::kable(results, digits=2)
-```
 
 
 So, the mean of the bootstrap distribuion is similar to the mean of `BaseSample`.  This is not unexpected, it also isn't particularly useful.  We want to say something about the mean of *real* popultion, not the mean of the sample.
@@ -168,3 +159,13 @@ We'll keep this in mind:
 * Bootstraping does *not* do a good job giving the *center* of the sampling distribuiton.
 
 We'll see how to use this next....
+
+The HW asks for a table.  Here is quick and dirty way to make a table:
+
+```{r}
+Distribution <- c("Population", "Sample Distribution", "Sample", "Bootstrap Distribution")
+means <- c(mu, mu, mean(BaseSample), mean(BootDist))
+sdevs <- c(sigma, sigma/sqrt(n), sd(BaseSample),sd(BootDist))
+results <- cbind(Distribution, means, sdevs)
+knitr::kable(results, digits=2)
+```
