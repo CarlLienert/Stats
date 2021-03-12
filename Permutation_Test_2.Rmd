@@ -1,0 +1,78 @@
+---
+title: "Permutation_Test_2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Load the BookPrices data set.  Uncomment ONE of the following chunks to do this:
+
+```{r}
+library(resampledata)
+Books <- BookPrices
+head(Books)
+```
+
+```{r}
+#Books<-read.csv("https://sites.google.com/site/chiharahesterberg/data2/BookPrices.csv")
+#head(Books)
+```
+
+Conduct a permutation hypothesis test to determine if there is a difference in the mean price of Math books and the mean price of Economics books.
+
+You may need to pool the prices of math books and the prices of physics books. Here is an example of pooling data from two vectors:
+
+```{r}
+odds <- c(1,3,5,7)
+evens <- c(0,2,4,6,8,10)
+pool <- c(odds, evens)
+pool
+```
+
+```{r}
+boxplot(BookPrices$Price~BookPrices$Subject)
+```
+
+```{r}
+
+MathBooks <- subset(BookPrices, select=Price, subset=BookPrices$Subject=="Mathematics", drop=T)
+MathBooks
+
+EconBooks <- subset(BookPrices, select=Price, subset=BookPrices$Subject=="Economics", drop=T)
+EconBooks
+```
+
+```{r}
+observed <- mean(MathBooks)-mean(EconBooks)
+observed
+```
+
+```{r}
+Pool <- c(MathBooks, EconBooks)
+poolsize <- length(Pool)
+poolsize
+group1size <- length(MathBooks)
+group1size
+```
+```{r}
+N=10^4-1
+result <- numeric(N)
+for (i in 1:N)
+{index <- sample(poolsize, group1size, replace=F)
+result[i] <- mean(Pool[index])-mean(Pool[-index])
+                  }
+```
+
+
+```{r}
+hist(result)
+```
+
+```{r}
+2*min((sum(result >= observed)+1)/(N+1),
+(sum(result <= observed)+1)/(N+1))
+```
+
