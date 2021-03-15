@@ -136,9 +136,28 @@ Strategy
 ====
 
 In order to find a *95% confidence interval* we'll find the arsenic levels in the distribution between which 95% of the sample means lie.  That is, we want
-$q_1$ such that $$P(q_1 \leq A)=0.025$$ and $q_2$ such that $$P(A \geq q_2)=.972$$.  The area under the distribution between $q_1$ and $q_2$ is 95% of the mean values of the samples - the true mean is 95% certain to lie in that region.  (This idea is borrowed from a process aplied to normal distributions.)
+$q_1$ such that $$P(q_1 \leq A)=0.025$$ and $q_2$ such that $$P(A \leq q_2)=.975.$$  The area under the distribution between $q_1$ and $q_2$ is 95% of the mean values of the samples - the true mean is 95% certain to lie in that region.  (This idea is borrowed from a process aplied to normal distributions.)
 
 You can think of this as everything *but* tails of 2.5% on each side.
+
+=======
+
+```{r}
+qs <- quantile(BootMeanArs, c(0.025, 0.975), names=F)
+q1 <- qs[1]
+q2 <- qs[2]
+h <- hist(BootMeanArs)
+cuts <- cut(h$breaks, c(-Inf, q1, q2, Inf ))
+#plot(h, col=c("white", "red", "white")[cuts])
+```
+
+=======
+```{r}
+plot(h, col=c("white", "red", "white")[cuts])
+```
+
+
+
 
 
 R computation of a confidence interval

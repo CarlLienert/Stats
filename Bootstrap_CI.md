@@ -144,7 +144,7 @@ mean(BootMeanArs)
 ```
 
 ```
-[1] 5.261965
+[1] 5.265179
 ```
 
 ```r
@@ -152,7 +152,7 @@ sd(BootMeanArs)
 ```
 
 ```
-[1] 0.3565569
+[1] 0.3577291
 ```
 
 
@@ -172,7 +172,7 @@ mean(BootMeanArs)-mean(Ars)
 ```
 
 ```
-[1] -0.002071862
+[1] 0.001142317
 ```
 
 
@@ -187,9 +187,37 @@ Strategy
 ====
 
 In order to find a *95% confidence interval* we'll find the arsenic levels in the distribution between which 95% of the sample means lie.  That is, we want
-$q_1$ such that $$P(q_1 \leq A)=0.025$$ and $q_2$ such that $$P(A \geq q_2)=.972$$.  The area under the distribution between $q_1$ and $q_2$ is 95% of the mean values of the samples - the true mean is 95% certain to lie in that region.  (This idea is borrowed from a process aplied to normal distributions.)
+$q_1$ such that $$P(q_1 \leq A)=0.025$$ and $q_2$ such that $$P(A \leq q_2)=.975.$$  The area under the distribution between $q_1$ and $q_2$ is 95% of the mean values of the samples - the true mean is 95% certain to lie in that region.  (This idea is borrowed from a process aplied to normal distributions.)
 
 You can think of this as everything *but* tails of 2.5% on each side.
+
+=======
+
+
+```r
+qs <- quantile(BootMeanArs, c(0.025, 0.975), names=F)
+q1 <- qs[1]
+q2 <- qs[2]
+h <- hist(BootMeanArs)
+```
+
+![plot of chunk unnamed-chunk-10](Bootstrap_CI-figure/unnamed-chunk-10-1.png)
+
+```r
+cuts <- cut(h$breaks, c(-Inf, q1, q2, Inf ))
+#plot(h, col=c("white", "red", "white")[cuts])
+```
+
+=======
+
+```r
+plot(h, col=c("white", "red", "white")[cuts])
+```
+
+![plot of chunk unnamed-chunk-11](Bootstrap_CI-figure/unnamed-chunk-11-1.png)
+
+
+
 
 
 R computation of a confidence interval
@@ -204,7 +232,7 @@ quantile(BootMeanArs, c(0.025, 0.975))
 
 ```
     2.5%    97.5% 
-4.596591 5.992790 
+4.596368 6.001361 
 ```
 
 
@@ -244,7 +272,7 @@ EDA first
 boxplot(MnGroundwater$Arsenic~MnGroundwater$Basin.Name)
 ```
 
-![plot of chunk unnamed-chunk-11](Bootstrap_CI-figure/unnamed-chunk-11-1.png)
+![plot of chunk unnamed-chunk-13](Bootstrap_CI-figure/unnamed-chunk-13-1.png)
 
 ======
 Let's compare the two that seem to have the largest IQR: the two with the biggest boxes.  Hard to read, but they are the 5th and 8th:
@@ -288,7 +316,7 @@ and look at it:
 boxplot(Minn, Red)
 ```
 
-![plot of chunk unnamed-chunk-14](Bootstrap_CI-figure/unnamed-chunk-14-1.png)
+![plot of chunk unnamed-chunk-16](Bootstrap_CI-figure/unnamed-chunk-16-1.png)
 
 
 observed difference of means
@@ -361,7 +389,7 @@ Plot the distribution of the bootstrap distribution.  Does it look right?
 hist(BootDiffMeans)
 ```
 
-![plot of chunk unnamed-chunk-17](Bootstrap_CI-figure/unnamed-chunk-17-1.png)
+![plot of chunk unnamed-chunk-19](Bootstrap_CI-figure/unnamed-chunk-19-1.png)
 
 
 Confidence Interval
@@ -381,7 +409,7 @@ quantile(BootDiffMeans, c(0.025, 0.975))
 
 ```
       2.5%      97.5% 
--5.6119526  0.6438037 
+-5.5847566  0.6368876 
 ```
 
 
@@ -428,7 +456,7 @@ for (i in 1:N)
 hist(permdist)
 ```
 
-![plot of chunk unnamed-chunk-20](Bootstrap_CI-figure/unnamed-chunk-20-1.png)
+![plot of chunk unnamed-chunk-22](Bootstrap_CI-figure/unnamed-chunk-22-1.png)
 
 =====
 
@@ -448,7 +476,7 @@ observed
 ```
 
 ```
-[1] 0.1131589
+[1] 0.1139189
 ```
 
 The $p$-value confirms our previous conclusion.  With a $p$-value this large there is not evidence to reject the null hypothesis that the mean difference in arsenic level is zero.
@@ -493,7 +521,7 @@ quantile(BootMeanArsModified, c(0.025, 0.975))
 
 ```
     2.5%    97.5% 
-4.499619 5.732003 
+4.498655 5.726898 
 ```
 
 ```r
@@ -501,7 +529,7 @@ quantile(BootMeanArsModified, c(0.025, 0.975), names=F)[2]-quantile(BootMeanArsM
 ```
 
 ```
-[1] 1.232383
+[1] 1.228243
 ```
 
 Did the width of the interval decrease?
@@ -513,7 +541,7 @@ quantile(BootMeanArs, c(0.025, 0.975, names=F), names=F)[2]-quantile(BootMeanArs
 ```
 
 ```
-[1] 1.396199
+[1] 1.404992
 ```
 
 ```r
@@ -521,7 +549,7 @@ quantile(BootMeanArsModified, c(0.025, 0.975, names=F), names=F)[2]-quantile(Boo
 ```
 
 ```
-[1] 1.232383
+[1] 1.228243
 ```
 
 Yes, a little.
