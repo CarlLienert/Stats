@@ -1,0 +1,50 @@
+---
+title: "Boston_Temps"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+*The following data is a (small) sample of temperatures in Boston in mid-October. Download the data.*
+
+```{r}
+BostonTemps <- read.csv("https://www.dropbox.com/s/jqh2fsx4qoc8ex3/BostonTemps.csv?dl=1")
+head(BostonTemps)
+```
+
+*Do a little EDA on the average temperatures. Comment on the distribution.*
+
+
+```{r}
+
+```
+
+
+
+*Perform the Method of Moments procedure to fit a gamma distribution to the data.  That is, determine the values of $\lambda$ and $r$ that make a gamma distribution best fit the data.*
+
+
+```{r}
+
+```
+
+
+*Plot the resulting gamma distribution superimposed on a histogram of the data set.*
+
+```{r}
+
+```
+
+
+*Perform the initial steps in the goodness of fit process.  Just up to the table.  Don't worry about the $\chi^2$ part.*
+
+
+```{r}
+
+```
+
+
+
+*Do you think a gamma distribution models Boston temps in October well?  Why or why not?*
